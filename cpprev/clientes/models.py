@@ -1,5 +1,4 @@
 from django.db import models
-import os
 
 # Create your models here.
 class Cliente(models.Model):
@@ -13,7 +12,7 @@ class Cliente(models.Model):
     is_deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f'{self.cpf}, {self.nome}, {self.data_nascimento}, {self.telefone_whatsapp}, {self.telefone}'  # Retorna o nome do cliente e o CPF do cliente
+        return f'{self.cpf}, {self.nome}, {self.data_nascimento}, {self.telefone_whatsapp}, {self.telefone}, {self.email}'  # Retorna o nome do cliente e o CPF do cliente
     
     def get_class_name(self):
         return self.__class__.__name__

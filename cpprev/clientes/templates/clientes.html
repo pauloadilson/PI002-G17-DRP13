@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+{% block content %}
+{% load django_bootstrap5 %}
+
+<main class="content">
+  <div class="container-fluid">
+    <div class="p-1 mt-3">
+      <div class="display-5">Clientes</div>
+      <hr />
+      <p class="d-inline-flex gap-1">
+        <a class="btn btn-light" href="{% url 'novo_cliente' %}" role="button">
+          Novo Cliente
+        </a>
+      </p>
+    </div>
+
+    <div class="p-1">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>CPF</th>
+            <th>Nome</th>
+            <th>Data de Nascimento</th>
+            <th>Telefone</th>
+            <th>WhatsApp</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cliente in clientes %}
+          <tr>
+            <td>
+              <a href=""> {{ cliente.cpf }} </a>
+            </td>
+            <td>{{ cliente.nome }}</td>
+            <td>{{ cliente.data_nascimento|date:"d/m/Y" }}</td>
+            <td>{{ cliente.telefone_whatsapp }}</td>
+            <td>{{ cliente.telefone }}</td>
+            <td>
+              <a
+                href=""
+                class="btn btn-warning"
+                >{% bs_icon 'pencil-square' %}</a
+              >
+              <a
+                href=""
+                class="btn btn-danger"
+                >{% bs_icon 'file-x' %}</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+{% endblock content %}

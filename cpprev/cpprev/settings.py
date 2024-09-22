@@ -38,7 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'clientes',
+    'clientes.apps.ClientesConfig',
+    "django_bootstrap5",
+    "crispy_forms",
+    "crispy_bootstrap5",
+    "django_bootstrap_icons",
 ]
 
 MIDDLEWARE = [
@@ -83,6 +87,12 @@ DATABASES = {
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': os.getenv('DATABASE_HOST'),
         'PORT': os.getenv('DATABASE_PORT'),
+        'TEST': {
+            'NAME': 'test_db-cp-prev-pic2',
+        },
+        'OPTIONS': {
+            'options': '-c client_encoding=UTF8',
+        },
     }
 }
 
@@ -121,6 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
@@ -128,3 +139,14 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Data no formato brasileiro dd-mm-aaaa
+DATE_INPUT_FORMATS = ["%d/%m/%Y"]
+
+# Configuração do diretório de arquivos de mídia
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
+# Configuração do Crispy Forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
