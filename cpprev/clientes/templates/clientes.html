@@ -22,8 +22,9 @@
             <th>CPF</th>
             <th>Nome</th>
             <th>Data de Nascimento</th>
-            <th>Telefone</th>
             <th>WhatsApp</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -37,15 +38,16 @@
             <td>{{ cliente.data_nascimento|date:"d/m/Y" }}</td>
             <td>{{ cliente.telefone_whatsapp }}</td>
             <td>{{ cliente.telefone }}</td>
+            <td>{{ cliente.email }}</td>
             <td>
               <a
                 href=""
-                class="btn btn-warning"
+                class="btn btn-warning" atitle="Editar"
                 >{% bs_icon 'pencil-square' %}</a
               >
               <a
                 href=""
-                class="btn btn-danger"
+                class="btn btn-danger" atitle="Excluir"
                 >{% bs_icon 'file-x' %}</a
               >
             </td>
