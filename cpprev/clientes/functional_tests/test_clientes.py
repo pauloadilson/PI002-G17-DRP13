@@ -49,17 +49,12 @@ class TestClientes(StaticLiveServerTestCase):
         self.assertEqual(element.text, "Clientes")
         
         # verificar se o botão editar está presente
-        time.sleep(20)
         element = self.driver.find_element(By.XPATH,"/html/body/div/main/div/div[2]/table/tbody/tr/td[7]/a[1]")
-        # /html/body/div/main/div/div[2]/table/tbody/tr/td[7]/a[1]
-        # /html/body/div/main/div/div[2]/table/tbody/tr/td[7]/a[1]
-        # /html/body/div/main/div/div[2]/table/tbody/tr/td[7]/a[1]
         name_attribute = element.get_attribute("atitle")
         self.assertEqual(name_attribute, "Editar")
 
         # verificar se o botão excluir está presente
         element = self.driver.find_element(By.XPATH,"/html/body/div/main/div/div[2]/table/tbody/tr/td[7]/a[2]")
-        time.sleep(10)
         name_attribute = element.get_attribute("atitle")
         self.assertEqual(name_attribute, "Excluir")
 
@@ -96,6 +91,7 @@ class TestClientes(StaticLiveServerTestCase):
     def test_novo_cliente_insert_and_check(self):
         # verificar se o formulário está funcionando
         self.page = self.driver.get(self.novo_cliente_url)
+        self.driver.maximize_window()
 
         element = self.driver.find_element(By.XPATH,"/html/body/div[1]/main/div/div[2]/form/div[1]/input")
         element.send_keys(self.cliente1['cpf'])
@@ -110,11 +106,14 @@ class TestClientes(StaticLiveServerTestCase):
         element = self.driver.find_element(By.XPATH,"/html/body/div[1]/main/div/div[2]/form/div[7]/div/input[1]")
         element.click()
         self.assertEqual(self.driver.current_url, self.clientes_url)
+        time.sleep(5)
+        print('Esperando 5 segundos para verificar se o cliente foi salvo')
         element = self.driver.find_element(By.XPATH,"/html/body/div/main/div/div[1]/div")
         self.assertEqual(element.text, "Clientes")
 
         # verificar se o cliente foi salvo
         element = self.driver.find_element(By.XPATH,"/html/body/div/main/div/div[2]/table/tbody/tr/td[1]")
+
         self.assertEqual(element.text, self.cliente1['cpf'])
         element = self.driver.find_element(By.XPATH,"/html/body/div/main/div/div[2]/table/tbody/tr/td[2]")
         self.assertEqual(element.text, self.cliente1['nome'])
