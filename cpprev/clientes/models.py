@@ -5,8 +5,9 @@ class Cliente(models.Model):
     cpf = models.CharField(max_length=11, primary_key =True) # CPF e unico para cada cliente Ex: 12345678900
     nome = models.CharField(max_length=100) # Nome do cliente Ex: Joao da Silva
     data_nascimento = models.DateField() # Data de nascimento do cliente Ex: 21-01-1990
-    telefone_whatsapp = models.CharField(max_length=11, blank=True, null=True) # Telefone do cliente Ex: 81999998888
     telefone = models.CharField(max_length=11, blank=True, null=True) # Telefone do cliente Ex: 81999998888
+    observacao_telefone = models.TextField(blank=True, null=True) # Observacao do telefone do cliente Ex: Recado Luiz
+    telefone_whatsapp = models.CharField(max_length=11, blank=True, null=True) # Telefone do cliente Ex: 81999998888
     email = models.EmailField(max_length=100, blank=True, null=True) # Email do cliente Ex:
     
     is_deleted = models.BooleanField(default=False)
@@ -35,19 +36,12 @@ class Servico(models.Model):
     def __str__(self) -> str:
         return f'{self.nome}' # Retorna o nome do serviço
     
-class Estado(models.Model):
-    id = models.AutoField(primary_key=True) # ID do estado
-    nome = models.CharField(max_length=100) # Nome do estado Ex: Em exigencia, Em analise, Conclui­do
-
-    def __str__(self) -> str:
-        return f'{self.nome}' # Retorna o nome do estado
-    
 class Requerimento(models.Model):
     id = models.AutoField(primary_key=True) # ID do requerimento
     protocolo = models.CharField(max_length=20, unique=True) # Protocolo do requerimento
+    NB = models.CharField(max_length=20) # Numero do benefi­cio do cliente
     requerente_titular = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='cliente_titular_requerimento') # Relacionamento com o modelo Cliente
     servico = models.ForeignKey(Servico, on_delete=models.PROTECT, related_name='servico_requerimento') # Servico solicitado Ex: Aposentadoria por idade
-    NB = models.CharField(max_length=20) # Numero do benefi­cio do cliente
     requerente_dependentes = models.TextField(blank=True, null=True) #.ManyToManyField(Cliente, related_name='cliente_dependente_requerimento', blank=True, null=True) # Relacionamento com o modelo Cliente
     tutor_curador = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='cliente_tutor_curador_requerimento', blank=True, null=True) # Relacionamento com o modelo Cliente
     instituidor = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='cliente_instituidor_requerimento', blank=True, null=True) # Relacionamento com o modelo Cliente
@@ -66,24 +60,32 @@ class Requerimento(models.Model):
     def delete(self, *args, **kwargs):
         self.is_deleted = True
         self.save()
+    
+    def get_class_name(self):
+        return self.__class__.__name__
+    
+class EstadoRequerimentoInicial(models.Model):
+    ESTADOS_INICIAIS = [
+        ('em análise', 'Em Análise'),
+        ('concluído', 'Concluído'),
+    ]
+    
+    id = models.AutoField(primary_key=True) # ID do estado
+    nome = models.CharField(max_length=100,choices=ESTADOS_INICIAIS) # Nome do estado Ex: Em exigencia, Em analise, Conclui­do
+
+    def __str__(self) -> str:
+        return f'{self.nome}' # Retorna o nome do estado
+
+class RequerimentoInicial(Requerimento):
+    estado = models.ForeignKey(EstadoRequerimentoInicial, on_delete=models.PROTECT, related_name='estado_requerimento_inicial') # Estado do requerimento Ex: Pendente, Concluido
 
     @property
     def total_exigencias(self):
-        lista_exigencias = Exigencia.objects.filter(is_deleted=False).filter(
-            NB=self
+        lista_exigencias = ExigenciaRequerimentoInicial.objects.filter(is_deleted=False).filter(
+            requerimento=self
             )
         return len(lista_exigencias)
-    
-class EstadoRequerimentoInicial(Estado):
-    ESTADOS = [
-            ('em análise', 'Em Análise'),
-            ('concluído', 'Concluído'),
-        ]
-    estado = models.CharField(max_length=20, choices=ESTADOS)
-
-class RequerimentoInicial(Requerimento):
-    estado_atual = models.ForeignKey(EstadoRequerimentoInicial, on_delete=models.PROTECT, related_name='estado_requerimento_inicial') # Estado do requerimento Ex: Pendente, Concluido
-
+'''
 class HistoricoEstadoRequerimento(models.Model):
     id = models.AutoField(primary_key=True) # ID do historico de estado do requerimento
     requerimento = models.ForeignKey(Requerimento, on_delete=models.PROTECT, related_name='historico_estado_requerimento')
@@ -92,25 +94,41 @@ class HistoricoEstadoRequerimento(models.Model):
     data_mudanca = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.requerimento.protocolo} do estado {self.novo_estado.nome} para {self.data_mudanca}"
-
+        return f"{self.requerimento.protocolo} do estado {self.estado_anterior.nome} para {self.novo_estado.nome} em {self.data_mudanca}"
+'''
 class EstadoRequerimentoRecurso(models.Model):
-    ESTADOS = [
-            ('em análise na junta', 'Em Análise na Junta'),
-            ('em análise no conselho', 'Em Análise no Conselho'),
-            ('concluído', 'Concluído'),
-        ]
-    estado = models.CharField(max_length=20, choices=ESTADOS)
+    ESTADOS_RECURSOS = [
+        ('em análise na junta', 'Em Análise na Junta'),
+        ('em análise no conselho', 'Em Análise no Conselho'),
+        ('concluído', 'Concluído'),
+    ]
+
+    id = models.AutoField(primary_key=True) # ID do estado
+    nome = models.CharField(max_length=30, choices=ESTADOS_RECURSOS)
+    
+    def __str__(self) -> str:
+        return f'{self.nome}'
 
 class RequerimentoRecurso(Requerimento):
-    estado_atual = models.ForeignKey(EstadoRequerimentoRecurso, on_delete=models.PROTECT, related_name='estado_requerimento_recurso') # Estado do requerimento Ex: Em analise, Concluido
+    estado = models.ForeignKey(EstadoRequerimentoRecurso, on_delete=models.PROTECT, related_name='estado_requerimento_recurso') # Estado do requerimento Ex: Em analise, Concluido
+    
+    @property
+    def total_exigencias(self):
+        lista_exigencias = ExigenciaRequerimentoRecurso.objects.filter(is_deleted=False).filter(
+            requerimento=self
+            )
+        return len(lista_exigencias)
+class EstadoExigencia(models.Model):
+    ESTADOS_EXIGENCIA = [
+        ('em análise', 'Em Análise'),
+        ('concluído', 'Concluído'),
+    ]
+    
+    id = models.AutoField(primary_key=True) # ID do estado
+    nome = models.CharField(max_length=100,choices=ESTADOS_EXIGENCIA) # Nome do estado Ex: Em exigencia, Em analise, Conclui­do
 
-class EstadoExigencia(Estado):
-    ESTADOS = [
-            ('em análise', 'Em Análise'),
-            ('concluído', 'Concluído'),
-        ]
-    estado = models.CharField(max_length=20, choices=ESTADOS)
+    def __str__(self) -> str:
+        return f'{self.nome}' # Retorna o nome do estado
     
 class Natureza(models.Model):
     id = models.AutoField(primary_key=True) # ID da natureza
@@ -121,8 +139,8 @@ class Natureza(models.Model):
     
 class Exigencia(models.Model):
     id = models.AutoField(primary_key=True) # ID da exigÃªncia
-    NB = models.ForeignKey('requerimentos.Requerimento', on_delete=models.PROTECT, related_name='NB_exigencia', blank=True, null=True) # Relacionamento com o modelo Requerimento
-    data_final_prazo = models.DateField() # Data da exigÃªncia
+    requerimento = models.ForeignKey(Requerimento, on_delete=models.PROTECT, related_name='requerimento_exigencia') # Relacionamento com o modelo Requerimento
+    data = models.DateField() # Data da exigÃªncia
     natureza = models.ForeignKey(Natureza, on_delete=models.PROTECT, related_name='natureza_exigencia') # Natureza da exigecia Ex: Documentacao, Informacao
     estado = models.ForeignKey(EstadoExigencia, on_delete=models.PROTECT, related_name='estado_exigencia') # Estado do recurso Ex: Pendente, Conclui­do
     
@@ -130,7 +148,7 @@ class Exigencia(models.Model):
 
 
     def __str__(self) -> str:
-        return f'Exigência: id nº {self.id} do NB nº {self.NB.NB} de {self.NB.requerente_titular.nome}, {self.NB.requerente_titular.cpf}'
+        return f'Exigência: id nº {self.id} do NB nº {self.requerimento.NB} de {self.requerimento.requerente_titular.nome}, {self.requerimento.requerente_titular.cpf}'
     
     def get_class_name(self):
         return self.__class__.__name__
@@ -139,6 +157,15 @@ class Exigencia(models.Model):
         self.is_deleted = True
         self.save()
 
+class ExigenciaRequerimentoInicial(Exigencia):
+    # herdar de Exigencia
+    pass
+
+class ExigenciaRequerimentoRecurso(Exigencia):
+    # herdar de Exigencia
+    pass
+
+'''
 class HistoricoEstadoExigencia(models.Model):
     id = models.AutoField(primary_key=True) # ID do historico de estado da exigencia
     exigencia = models.ForeignKey(Exigencia, on_delete=models.PROTECT, related_name='historico_estado_exigencia')
@@ -147,8 +174,8 @@ class HistoricoEstadoExigencia(models.Model):
     data_mudanca = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.exigencia.id} do estado {self.novo_estado.nome} para {self.data_mudanca}"
-
+        return f"{self.exigencia.id} do estado {self.novo_estado.estado} para {self.data_mudanca}"
+'''
 class Atendimento(models.Model):
     id = models.AutoField(primary_key=True) # ID do atendimento
     data = models.DateTimeField(auto_now_add=True) # Data do atendimento
@@ -170,4 +197,4 @@ class Documento(models.Model):
     exigencia = models.ForeignKey(Exigencia, on_delete=models.PROTECT, related_name='exigencia_documento', blank=True, null=True) # Relacionamento com o modelo Exigencia
 
     def __str__(self) -> str:
-        return f'{self.nome}' # Retorna o nome do documento
+        return f'{self.nome_arquivo}' # Retorna o nome do documento

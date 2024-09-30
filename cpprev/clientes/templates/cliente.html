@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+
+{% block content %}
+<main class="content mb-5" >
+    <div class="container-fluid mb-3">
+        <div class="p-1 mt-3">
+            <div class='row'>
+                <div class='display-5 col-sm-8'>Cliente</div>
+                <div class='display-5 col-sm-4'>
+                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                    {% if qtde_instancias_filhas == 0 %}
+                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                    {% endif %}
+                </div>
+            </div>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">CPF</dt>
+                <dd class="col-sm-9">{{ cliente.cpf }}</dd>
+              
+                <dt class="col-sm-3">Nome</dt>
+                <dd class="col-sm-9">{{ cliente.nome }}</dd>
+              
+                <dt class="col-sm-3 text-truncate">Data de Nascimento</dt>
+                <dd class="col-sm-9">{{ cliente.data_nascimento|date:"d/m/Y"}}</dd>
+              
+                <dt class="col-sm-3">WhatsApp</dt>
+                <dd class="col-sm-9">{{ cliente.telefone_whatsapp }}</dd>
+              
+                <dt class="col-sm-3">Telefone</dt>
+                <dd class="col-sm-9">{{ cliente.telefone }}</dd>
+
+              </dl>
+              <hr />
+              <p class="d-inline gap-1">
+                <a class="btn btn-light" href="{% url 'escolher_tipo_requerimento' cliente.cpf %}" role="button">
+                    Novo Requerimento
+                </a>
+            </div>
+        </div>
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Requerimentos iniciais
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <table class="table table-hover" id='requerimentos'>
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Protocolo</th>
+                                <th>NB</th>
+                                <th>Serviço</th>
+                                <th>Dependentes</th>
+                                <th>Tutor/Curador</th>
+                                <th>Instituidor</th>
+                                <th>Data do Protocolo</th>
+                                <th>Estado</th>
+                                <th>Observação</th>
+                                <th class='col-sm-2'>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for requerimento in requerimentos_cliente %}
+                            <tr>
+                                <td><a href="{% url 'requerimento_inicial' cliente.cpf requerimento.id %}"> {{ requerimento.id }}</a></td>
+                                <td>{{ requerimento.protocolo }}</td>
+                                <td>{{ requerimento.NB }}</td>
+                                <td>{{ requerimento.servico }}</td>
+                                <td>{{ requerimento.requerente_dependentes }}</td>
+                                <td>{{ requerimento.tutor_curador }}</td>
+                                <td>{{ requerimento.instituidor }}</td>
+                                <td>{{ requerimento.data|date:"d/m/Y" }}</td>
+                                <td>{{ requerimento.estado }}</td>
+                                <td>{{ requerimento.observacao }}</td>
+                                <td >
+                                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed display-5 col-sm-8" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                   <strong> Recursos </strong>
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <table class="table table-hover" id='recursos'>
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Protocolo</th>
+                                <th>NB</th>
+                                <th>Serviço</th>
+                                <th>Dependentes</th>
+                                <th>Tutor/Curador</th>
+                                <th>Instituidor</th>
+                                <th>Data do Protocolo</th>
+                                <th>Estado</th>
+                                <th>Observação</th>
+                                <th class='col-sm-2'>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for recurso in recursos_cliente %}
+                            <tr>
+                                <td><a href="{% url 'requerimento_recurso' cliente.cpf recurso.id %}"> {{ recurso.id }}</a></td>
+                                <td>{{ recurso.protocolo }}</td>
+                                <td>{{ recurso.NB }}</td>
+                                <td>{{ recurso.servico }}</td>
+                                <td>{{ recurso.requerente_dependentes }}</td>
+                                <td>{{ recurso.tutor_curador }}</td>
+                                <td>{{ recurso.instituidor }}</td>
+                                <td>{{ recurso.data|date:"d/m/Y" }}</td>
+                                <td>{{ recurso.estado }}</td>
+                                <td>{{ recurso.observacao }}</td>
+                                <td >
+                                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="p-1 mt-3">
+            <a class="btn btn-secondary" onclick="window.history.back()">Voltar</a>
+        </div>
+    </div>
+</main>
+{% endblock content %}

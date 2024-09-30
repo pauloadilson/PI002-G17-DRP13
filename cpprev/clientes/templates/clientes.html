@@ -3,7 +3,7 @@
 {% block content %}
 {% load django_bootstrap5 %}
 
-<main class="content">
+<main class="content mb-5">
   <div class="container-fluid">
     <div class="p-1 mt-3">
       <div class="display-5">Clientes</div>
@@ -32,7 +32,7 @@
           {% for cliente in clientes %}
           <tr>
             <td>
-              <a href=""> {{ cliente.cpf }} </a>
+              <a href="{% url 'cliente' cliente.cpf %}"> {{ cliente.cpf }} </a>
             </td>
             <td>{{ cliente.nome }}</td>
             <td>{{ cliente.data_nascimento|date:"d/m/Y" }}</td>

@@ -1,5 +1,18 @@
+from typing import Any, Mapping
 from django import forms
-from clientes.models import Cliente
+from django.forms.renderers import BaseRenderer
+from django.forms.utils import ErrorList
+from clientes.models import (
+    Cliente, 
+    RequerimentoInicial, 
+    RequerimentoRecurso, 
+    Exigencia, 
+    EstadoRequerimentoInicial, 
+    EstadoRequerimentoRecurso,
+    EstadoExigencia,
+    ExigenciaRequerimentoInicial,
+    ExigenciaRequerimentoRecurso
+)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Field, Button
 from crispy_forms.bootstrap import FormActions
@@ -37,3 +50,138 @@ class ClienteModelForm(forms.ModelForm):
     def save(self, commit=True):
         return super(ClienteModelForm, self).save(commit=commit)
     
+class EscolhaTipoRequerimentoForm(forms.Form):
+    TIPO_REQUERIMENTO_CHOICES = [
+        ('inicial', 'Requerimento Inicial'),
+        ('recurso', 'Requerimento Recurso'),
+    ]
+    tipo_requerimento = forms.ChoiceField(choices=TIPO_REQUERIMENTO_CHOICES, label="Tipo de Requerimento")
+    
+    def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.helper = FormHelper()
+            self.helper.form_method = 'post'
+            self.helper.layout = Layout(
+                Field('tipo_requerimento'),
+                FormActions(
+                    Submit('submit', 'Escolher', css_class='btn btn-primary'),
+                    Button('button', 'Voltar', css_class='btn btn-secondary', onclick='window.history.back()'),
+                )
+            )
+
+    def save(self, commit=True):
+        return super(RequerimentoInicialModelForm, self).save(commit=commit)
+
+
+class RequerimentoInicialModelForm(forms.ModelForm):
+    class Meta:
+        model = RequerimentoInicial
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(RequerimentoInicialModelForm, self).__init__(*args, **kwargs)
+        self.fields['estado'].queryset = EstadoRequerimentoInicial.objects.all()
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('protocolo'),
+            Field('NB'),
+            Field('requerente_titular'),
+            Field('servico'),
+            Field('requerente_dependentes'),
+            Field('tutor_curador'),
+            Field('instituidor'),
+            Field('data', css_class='form-control date_picker', placeholder='dd/mm/aaaa'),
+            Field('email', type='email'),
+            Field('observacao'),
+            Field('estado'),
+            FormActions(
+                Submit('submit', 'Salvar', css_class='btn btn-primary'),
+                Button('button', 'Voltar', css_class='btn btn-secondary', onclick='window.history.back()'),
+            )
+        )
+
+    def save(self, commit=True):
+        return super(RequerimentoInicialModelForm, self).save(commit=commit)
+        
+class RequerimentoRecursoModelForm(forms.ModelForm):
+    class Meta:
+        model = RequerimentoRecurso
+        fields = '__all__'
+    
+    def __init__(self, *args, **kwargs):
+        super(RequerimentoRecursoModelForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('protocolo'),
+            Field('NB'),
+            Field('requerente_titular'),
+            Field('servico'),
+            Field('requerente_dependentes'),
+            Field('tutor_curador'),
+            Field('instituidor'),
+            Field('data', css_class='form-control date_picker', placeholder='dd/mm/aaaa'),
+            Field('email', type='email'),
+            Field('observacao'),
+            Field('estado'),
+            FormActions(
+                Submit('submit', 'Salvar', css_class='btn btn-primary'),
+                Button('button', 'Voltar', css_class='btn btn-secondary', onclick='window.history.back()'),
+            )
+        )
+
+        def save(self, commit=True):
+            return super(RequerimentoRecursoModelForm, self).save(commit=commit)
+
+class ExigenciaModelForm(forms.ModelForm):
+    class Meta:
+        model = Exigencia
+        fields = ('requerimento', 'data', 'natureza', 'estado')
+
+    def __init__(self, *args, **kwargs):
+        super(ExigenciaModelForm, self).__init__(*args, **kwargs)
+        self.fields['estado'].queryset = EstadoExigencia.objects.all()
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('requerimento', css_class='form-control', type='hidden'),
+            Field('data', css_class='form-control date_picker', placeholder='dd/mm/aaaa'),
+            Field('natureza', css_class='form-control'),
+            Field('estado', css_class='form-control'),
+            FormActions(
+                Submit('submit', 'Salvar', css_class='btn btn-primary'),
+                Button('button', 'Voltar', css_class='btn btn-secondary', onclick='window.history.back()'),
+            )
+        )
+
+    def save(self, commit=True):
+        return super(ExigenciaModelForm, self).save(commit=commit)
+    
+
+class ExigenciaRequerimentoInicialModelForm(ExigenciaModelForm):
+    class Meta:
+        model = ExigenciaRequerimentoInicial
+        fields = ('requerimento', 'data', 'natureza', 'estado')
+
+class ExigenciaRequerimentoRecursoModelForm(ExigenciaModelForm):
+    class Meta:
+        model = ExigenciaRequerimentoRecurso
+        fields = ('requerimento', 'data', 'natureza', 'estado')
+
+# Formulário personalizado para EstadoRequerimentoInicial
+class EstadoRequerimentoInicialForm(forms.ModelForm):
+    class Meta:
+        model = EstadoRequerimentoInicial
+        fields = ['nome']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['nome'].choices = EstadoRequerimentoInicial().get_estados()
+
+# Formulário personalizado para EstadoRequerimentoRecurso
+class EstadoRequerimentoRecursoForm(forms.ModelForm):
+    class Meta:
+        model = EstadoRequerimentoRecurso
+        fields = ['nome']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['nome'].choices = EstadoRequerimentoRecurso().get_estados()

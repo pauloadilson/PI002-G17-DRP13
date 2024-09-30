@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+
+{% block content %}
+    
+<main class="content mb-5" >
+    <div class="container-fluid mb-3">
+        <div class="p-1 mt-3">
+            <div class='row'>
+                <div class='display-5 col-sm-8'>Cliente</div>
+                <div class='display-5 col-sm-4'>
+                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                </div>
+            </div>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">CPF</dt>
+                <dd class="col-sm-9"><a href="{% url 'cliente' cliente.cpf %}"> {{ cliente.cpf }} </a> </dd>
+            
+                <dt class="col-sm-3">Nome</dt>
+                <dd class="col-sm-9">{{ cliente.nome }}</dd>
+            
+                <dt class="col-sm-3 text-truncate">Data de Nascimento</dt>
+                <dd class="col-sm-9">{{ cliente.data_nascimento|date:"d/m/Y" }}</dd>
+            
+                <dt class="col-sm-3">WhatsApp</dt>
+                <dd class="col-sm-9">{{ cliente.telefone_whatsapp }}</dd>
+            {% if cliente.telefone %}
+                <dt class="col-sm-3">Telefone</dt>
+                <dd class="col-sm-9">{{ cliente.telefone }}</dd>
+            {% endif %}
+            </dl>  
+        </div>
+        <div class="p-1 mt-3">
+            <div class='row'>
+                <div class='display-5 col-sm-8'>{{ title }}</div>
+                <div class='display-5 col-sm-4'>
+                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                    {% if qtde_instancias_filhas == 0 %}
+                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                    {% endif %}
+                </div>
+            </div>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">NB</dt>
+                <dd class="col-sm-9">{{ requerimento.NB }}</dd>
+            
+                <dt class="col-sm-3">Serviço</dt>
+                <dd class="col-sm-9">{{ requerimento.servico }}</dd>
+            
+                <dt class="col-sm-3">Dependentes</dt>
+                <dd class="col-sm-9">{{ requerimento.requerente_dependentes }}</dd>
+            {% if requerimento.tutor_curador %}
+                <dt class="col-sm-3">Tutor/Curador</dt>
+                <dd class="col-sm-9">{{ requerimento.tutor_curador }}</dd>
+            {% endif %}
+            {% if requerimento.instituidor %}
+                <dt class="col-sm-3">Instituidor</dt>
+                <dd class="col-sm-9">{{ requerimento.instituidor }}</dd>
+            {% endif %}
+                <dt class="col-sm-3">Data do protocolo</dt>
+                <dd class="col-sm-9">{{ requerimento.data|date:"d/m/Y" }}</dd>
+            
+                <dt class="col-sm-3">Estado</dt>
+                <dd class="col-sm-9">{{ requerimento.estado }}</dd>
+            
+                <dt class="col-sm-3">Observação</dt>
+                <dd class="col-sm-9">{{ requerimento.observacao }}</dd>
+            </dl>  
+            <hr />
+            <p class="d-inline-flex gap-1">
+                {% if requerimento.get_class_name == 'RequerimentoInicial' %}
+                    <a class="btn btn-light"   href="{% url 'nova_exigencia_requerimento_inicial' cliente.cpf requerimento.id %}" role="button">
+                        Nova Exigência
+                    </a>
+                {% else %}
+                    <a class="btn btn-light"   href="{% url 'nova_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" role="button">
+                        Nova Exigência
+                    </a>
+                {% endif %}
+            </p>
+        </div>
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <b>Exigências</b>
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Data final do prazo</th>
+                                <th>Natureza</th>
+                                <th>Estado</th>
+                                <th class='col-sm-2'>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exigencia in exigencias_requerimento %}
+                            <tr>
+                                <td>{{ exigencia.data|date:"d/m/Y" }}</td>
+                                <td>{{ exigencia.natureza }}</td>
+                                <td>{{ exigencia.estado }}</td>
+                                <td >
+                                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="p-1 mt-3">
+            <a class="btn btn-secondary" onclick="window.history.back()">Voltar</a>
+        </div>
+    </div>
+</div>
+</main>
+{% endblock content %}

@@ -2,14 +2,14 @@
         
 {% block content %}
     
-<main class="content" >
-    <div class="container-fluid ">
+<main class="content mb-5" >
+    <div class="container-fluid">
         <div class="p-1 mt-3">
             <div class='display-5'>{{ form_title }} {% if form_title_identificador %} 
                 <span class="text-muted h5">para {{ form_title_identificador }}</span>{%  endif %}</div>
             <hr />
         </div>
-        <div class="mt-2 mb-5" id="inserir">
+        <div class="mt-2" id="inserir">
             <form method="post" enctype='multipart/form-data'>
                 {%  csrf_token %}
                 {% load crispy_forms_tags %}
