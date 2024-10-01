@@ -1,14 +1,20 @@
 from django.http import Http404
 from django.db.models.base import Model as Model
-from django.views.generic import TemplateView, ListView, CreateView, DetailView
+from django.views.generic import (
+    TemplateView, 
+    ListView, 
+    CreateView, 
+    DetailView, 
+)
 from django.views.generic.edit import FormView
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from clientes.models import (
     Cliente, 
     RequerimentoInicial, 
     RequerimentoRecurso, 
     ExigenciaRequerimentoInicial,
     ExigenciaRequerimentoRecurso,
-    EstadoRequerimentoRecurso
 )
 from clientes.forms import (
     ClienteModelForm, 
@@ -32,6 +38,7 @@ class IndexView(TemplateView):
         context["title"] = self.title
         return context
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ClientesListView(ListView):
     model = Cliente
     template_name = "clientes.html"
@@ -52,6 +59,7 @@ class ClientesListView(ListView):
         context["title"] = self.title
         return context
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ClienteCreateView(CreateView):
     model = Cliente
     template_name = 'form.html'
@@ -66,6 +74,7 @@ class ClienteCreateView(CreateView):
         
         return context
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ClienteDetailView(DetailView):
     model = Cliente
     template_name = "cliente.html"
@@ -96,6 +105,7 @@ class ClienteDetailView(DetailView):
 
         return context
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class EscolherTipoRequerimentoView(FormView):
     template_name = 'form.html'
     title = "Escolher Tipo de Requerimento"
@@ -121,6 +131,7 @@ class EscolherTipoRequerimentoView(FormView):
         
         return context
     
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class RequerimentoInicialCreateView(CreateView):
     model = RequerimentoInicial
     form_class = RequerimentoInicialModelForm
@@ -154,6 +165,7 @@ class RequerimentoInicialCreateView(CreateView):
         context["form_title_identificador"] = f'CPF nº {self.kwargs["cpf"]}'
         return context
     
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class RequerimentoRecursoCreateView(CreateView):
     model = RequerimentoRecurso
     form_class = RequerimentoRecursoModelForm
@@ -187,6 +199,7 @@ class RequerimentoRecursoCreateView(CreateView):
         context["form_title_identificador"] = f'CPF nº {self.kwargs["cpf"]}'
         return context
     
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class RequerimentoInicialDetailView(DetailView):
     model = RequerimentoInicial
     template_name = "requerimento.html"
@@ -218,6 +231,7 @@ class RequerimentoInicialDetailView(DetailView):
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         return context
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class RequerimentoRecursoDetailView(DetailView):
     model = RequerimentoRecurso
     template_name = "requerimento.html"
@@ -249,6 +263,7 @@ class RequerimentoRecursoDetailView(DetailView):
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         return context
     
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ExigenciaRequerimentoInicialCreateView(CreateView):
     model = ExigenciaRequerimentoInicial
     template_name = "form.html"
@@ -274,6 +289,7 @@ class ExigenciaRequerimentoInicialCreateView(CreateView):
         context["form_title_identificador"] = f'Id nº {self.kwargs["pk"]}'
         return context
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ExigenciaRequerimentoRecursoCreateView(CreateView):
     model = ExigenciaRequerimentoRecurso
     template_name = "form.html"
