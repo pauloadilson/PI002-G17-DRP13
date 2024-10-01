@@ -9,26 +9,34 @@
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Início</a>
           </li>
+          {% if user.is_authenticated == False %}
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="">Login</a>
+            <a class="nav-link" aria-current="page" href="{% url 'login' %}">Login</a>
           </li>
+          {% elif user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" aria-current="page" href="{% url 'clientes' %}">Clientes</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="">Prazos</a>
           </li>
+            {% if request.user.groups.all.0.name != "secretarias"%}
             <li class="nav-item">
               <a class="nav-link disabled" aria-disabled="true" href="#">Pagamentos</a>
-            </li> 
+            </li>
+            {% endif %}
           <li class="nav-item">
-            <a class="nav-link text-danger-emphasis"  href="">Sair</a>
+            <form method="POST" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="nav-link text-danger-emphasis">Sair</button>
+            </form>
           </li>
         </ul>
-        <form  class="d-flex" role="search" method="GET" action="">
+        <form  class="d-flex" role="search" method="GET" action="{% url 'clientes' %}">
           <input class="form-control mr-sm-2" type="search" placeholder="CPF ou parte sem pontuação" name="busca" aria-label="busca">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Busca</button>
         </form>
+        {% endif %}
       </div>
     </div>
   </nav>

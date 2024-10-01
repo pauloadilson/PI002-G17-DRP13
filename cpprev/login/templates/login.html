@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="content" >
+  <div class="container-fluid ">
+      <div class="p-1 mt-3">
+          <div class='display-5'>Login</div>
+          <hr />
+      </div>
+      <div class="mt-2" id="acessar">
+        <form method="post" enctype='multipart/form-data'>
+          {% csrf_token %}
+          {% load crispy_forms_tags %} 
+            {{ form|crispy }}
+          <p>Caso não tenha uma conta ou tenha esquecido a senha, contate o Administrador do Sistema!</p>
+          <button type="submit" class="btn btn-success">Acessar</button>
+        </form>
+      </div>
+
+  </div>
+</main>
+{% endblock content %}
