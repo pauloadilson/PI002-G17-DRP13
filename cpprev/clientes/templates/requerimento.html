@@ -71,11 +71,11 @@
             <hr />
             <p class="d-inline-flex gap-1">
                 {% if requerimento.get_class_name == 'RequerimentoInicial' %}
-                    <a class="btn btn-light"   href="{% url 'nova_exigencia_requerimento_inicial' cliente.cpf requerimento.id %}" role="button">
+                    <a class="btn btn-light"   href="{% url 'adicionar_exigencia_requerimento_inicial' cliente.cpf requerimento.id %}" role="button">
                         Nova Exigência
                     </a>
                 {% else %}
-                    <a class="btn btn-light"   href="{% url 'nova_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" role="button">
+                    <a class="btn btn-light"   href="{% url 'adicionar_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" role="button">
                         Nova Exigência
                     </a>
                 {% endif %}

@@ -25,18 +25,18 @@ from django.shortcuts import redirect
 # Create your views here.
 class IndexView(TemplateView):
     template_name = "index.html"
-    page_title = "Página inicial"
+    title = "Página inicial"
 
     def get_context_data(self, **kwargs) -> dict[str, any]:
         context = super(IndexView, self).get_context_data(**kwargs)
-        context["page_title"] = self.page_title
+        context["title"] = self.title
         return context
 
 class ClientesListView(ListView):
     model = Cliente
     template_name = "clientes.html"
     context_object_name = "clientes"
-    page_title = "Clientes"
+    title = "Clientes"
     ordering = ["nome"]
     paginate_by = 10
 
@@ -49,22 +49,20 @@ class ClientesListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page_title"] = self.page_title
+        context["title"] = self.title
         return context
 
 class ClienteCreateView(CreateView):
     model = Cliente
     template_name = 'form.html'
     form_class = ClienteModelForm
-    page_title = "Novo Cliente"
-    form_title = "Novo Cliente"
+    title = "Novo Cliente"
     success_url = reverse_lazy('clientes')
 
     def get_context_data(self, **kwargs):
         context = super(ClienteCreateView, self).get_context_data(**kwargs)
         # adicionar o título da página e o título do formulário ao contexto
-        context['page_title'] = self.page_title
-        context['form_title'] = self.form_title
+        context['title'] = self.title
         
         return context
 
@@ -100,6 +98,7 @@ class ClienteDetailView(DetailView):
 
 class EscolherTipoRequerimentoView(FormView):
     template_name = 'form.html'
+    title = "Escolher Tipo de Requerimento"
     form_class = EscolhaTipoRequerimentoForm
     success_url = reverse_lazy('escolher_tipo_requerimento')
 
@@ -109,18 +108,24 @@ class EscolherTipoRequerimentoView(FormView):
 
         # Incluindo o CPF na URL de redirecionamento
         if tipo == 'inicial':
-            return redirect('novo_requerimento_inicial', cpf=cpf)
+            return redirect('adicionar_requerimento_inicial', cpf=cpf)
         elif tipo == 'recurso':
-            return redirect('novo_requerimento_recurso', cpf=cpf)
+            return redirect('adicionar_requerimento_recurso', cpf=cpf)
         
         return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super(EscolherTipoRequerimentoView, self).get_context_data(**kwargs)
+        # adicionar o título da página e o título do formulário ao contexto
+        context['title'] = self.title
+        
+        return context
     
 class RequerimentoInicialCreateView(CreateView):
     model = RequerimentoInicial
     form_class = RequerimentoInicialModelForm
     template_name = 'form.html'
-    page_title = "Novo Requerimento"
-    form_title = "Novo Requerimento"
+    title = "Novo Requerimento"
     form_title_identificador = None
 
     def get_initial(self):
@@ -145,8 +150,7 @@ class RequerimentoInicialCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(RequerimentoInicialCreateView, self).get_context_data(**kwargs)
-        context["page_title"] = self.page_title
-        context["form_title"] = f"{self.form_title}"
+        context["title"] = self.title
         context["form_title_identificador"] = f'CPF nº {self.kwargs["cpf"]}'
         return context
     
@@ -154,8 +158,7 @@ class RequerimentoRecursoCreateView(CreateView):
     model = RequerimentoRecurso
     form_class = RequerimentoRecursoModelForm
     template_name = 'form.html'
-    page_title = "Novo Recurso"
-    form_title = "Novo Recurso"
+    title = "Novo Recurso"
     form_title_identificador = None
 
     def get_initial(self):
@@ -180,8 +183,7 @@ class RequerimentoRecursoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(RequerimentoRecursoCreateView, self).get_context_data(**kwargs)
-        context["page_title"] = self.page_title
-        context["form_title"] = f"{self.form_title}"
+        context["title"] = self.title
         context["form_title_identificador"] = f'CPF nº {self.kwargs["cpf"]}'
         return context
     
@@ -251,8 +253,7 @@ class ExigenciaRequerimentoInicialCreateView(CreateView):
     model = ExigenciaRequerimentoInicial
     template_name = "form.html"
     form_class = ExigenciaRequerimentoInicialModelForm
-    page_title = "Nova Exigência"
-    form_title = "Nova Exigência"
+    title = "Nova Exigência"
     form_title_identificador = None
 
     def get_initial(self):
@@ -269,8 +270,7 @@ class ExigenciaRequerimentoInicialCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(ExigenciaRequerimentoInicialCreateView, self).get_context_data(**kwargs)
-        context["page_title"] = self.page_title
-        context["form_title"] = self.form_title
+        context["title"] = self.title
         context["form_title_identificador"] = f'Id nº {self.kwargs["pk"]}'
         return context
 
@@ -278,8 +278,7 @@ class ExigenciaRequerimentoRecursoCreateView(CreateView):
     model = ExigenciaRequerimentoRecurso
     template_name = "form.html"
     form_class = ExigenciaRequerimentoRecursoModelForm
-    page_title = "Nova Exigência"
-    form_title = "Nova Exigência"
+    title = "Nova Exigência"
     form_title_identificador = None
 
     def get_initial(self):
@@ -296,7 +295,6 @@ class ExigenciaRequerimentoRecursoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(ExigenciaRequerimentoRecursoCreateView, self).get_context_data(**kwargs)
-        context["page_title"] = self.page_title
-        context["form_title"] = self.form_title
+        context["title"] = self.title
         context["form_title_identificador"] = f'Id nº {self.kwargs["pk"]}'
         return context
