@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+        
+{% block content %}
+    
+<main class="content" >
+    <div class="container-fluid ">
+        <div class="p-1 mt-3">
+            <div class='display-5'>{{ title }}</div>
+            <hr />
+        </div>
+        {% if qtde_instancias_filhas == 0 %}
+        <div class="mt-2" id="delete">
+            <p>Tem certeza que deseja excluir {{ tipo_objeto }} <strong>{{ form_title_identificador }}</strong>?</p>
+            <form method="post" enctype='multipart/form-data'>
+                {%  csrf_token %}
+                <div class="buttons-container">
+                    <button type="submit" class="btn btn-danger">Excluir {{ tipo_objeto }}</button>
+                    <a class="btn btn-secondary" onclick="window.history.back()">Cancelar</a>
+                </div>
+            </form>  
+
+        </div>
+        {% else %}
+        <div class="mt-2" id="delete">
+            <h1> Não é possível excluir {{ tipo_objeto }} </h1> 
+            <p> Excluir {{ tipo_objeto }} selecionado exigiria excluir os seguintes objetos relacionados protegidos:</p>
+            <ul>
+                {% for result in result_list %}
+                <li>
+                {% if result.get_class_name == 'RequerimentoInicial' %}
+                    Excluir <a href="{% url 'excluir_requerimento_inicial' result.requerente_titular.cpf result.id %}">  {{ result }} </a>
+                {% elif result.get_class_name == 'RequerimentoRecurso' %}
+                    Excluir <a href="{% url 'excluir_requerimento_recurso' result.requerente_titular.cpf result.id %}">  {{ result }} </a>
+                {% elif result.get_class_name == 'ExigenciaRequerimentoInicial' %}
+                    Excluir <a href="{% url 'excluir_exigencia_requerimento_inicial' result.requerimento.requerente_titular.cpf result.requerimento.id %}">  {{ result }} </a>
+                {% elif result.get_class_name == 'ExigenciaRequerimentoRecurso' %}
+                    Excluir <a href="{% url 'excluir_exigencia_requerimento_recurso' result.requerente_titular.cpf result.requerimento.id %}">  {{ result }} </a>
+                {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            <a class="btn btn-secondary" onclick="window.history.back()">Voltar</a>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock content %}

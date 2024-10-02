@@ -85,17 +85,7 @@ class RequerimentoInicial(Requerimento):
             requerimento=self
             )
         return len(lista_exigencias)
-'''
-class HistoricoEstadoRequerimento(models.Model):
-    id = models.AutoField(primary_key=True) # ID do historico de estado do requerimento
-    requerimento = models.ForeignKey(Requerimento, on_delete=models.PROTECT, related_name='historico_estado_requerimento')
-    estado_anterior = models.ForeignKey(Estado, on_delete=models.SET_NULL, null=True, related_name='estado_anterior')
-    novo_estado = models.ForeignKey(Estado, on_delete=models.PROTECT, related_name='novo_estado')
-    data_mudanca = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.requerimento.protocolo} do estado {self.estado_anterior.nome} para {self.novo_estado.nome} em {self.data_mudanca}"
-'''
 class EstadoRequerimentoRecurso(models.Model):
     ESTADOS_RECURSOS = [
         ('em análise na junta', 'Em Análise na Junta'),
@@ -165,17 +155,6 @@ class ExigenciaRequerimentoRecurso(Exigencia):
     # herdar de Exigencia
     pass
 
-'''
-class HistoricoEstadoExigencia(models.Model):
-    id = models.AutoField(primary_key=True) # ID do historico de estado da exigencia
-    exigencia = models.ForeignKey(Exigencia, on_delete=models.PROTECT, related_name='historico_estado_exigencia')
-    estado_anterior = models.ForeignKey(Estado, on_delete=models.SET_NULL, null=True, related_name='estado_anterior_exigencia')
-    novo_estado = models.ForeignKey(Estado, on_delete=models.PROTECT, related_name='novo_estado_exigencia')
-    data_mudanca = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.exigencia.id} do estado {self.novo_estado.estado} para {self.data_mudanca}"
-'''
 class Atendimento(models.Model):
     id = models.AutoField(primary_key=True) # ID do atendimento
     data = models.DateTimeField(auto_now_add=True) # Data do atendimento

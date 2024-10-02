@@ -9,7 +9,7 @@
             <div class='row'>
                 <div class='display-5 col-sm-8'>Cliente</div>
                 <div class='display-5 col-sm-4'>
-                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                    <a href="{% url 'atualizar_cliente' cliente.cpf %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
                 </div>
             </div>
             <hr />
@@ -35,10 +35,19 @@
             <div class='row'>
                 <div class='display-5 col-sm-8'>{{ title }}</div>
                 <div class='display-5 col-sm-4'>
-                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                {% if requerimento.get_class_name == 'RequerimentoInicial' %}
+                    <a href="{% url 'atualizar_requerimento_inicial' cliente.cpf requerimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
                     {% if qtde_instancias_filhas == 0 %}
-                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                    <a href="{% url 'excluir_requerimento_inicial' cliente.cpf requerimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
                     {% endif %}
+                {% elif requerimento.get_class_name == 'RequerimentoRecurso' %}
+                    <a href="{% url 'atualizar_requerimento_recurso' cliente.cpf requerimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                    {% if qtde_instancias_filhas == 0 %}
+                    <a href="{% url 'excluir_requerimento_recurso' cliente.cpf requerimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                    {% endif %}
+                {% endif %}
+                    
+                
                 </div>
             </div>
             <hr />
@@ -74,7 +83,7 @@
                     <a class="btn btn-light"   href="{% url 'adicionar_exigencia_requerimento_inicial' cliente.cpf requerimento.id %}" role="button">
                         Nova Exigência
                     </a>
-                {% else %}
+                {% elif requerimento.get_class_name == 'RequerimentoRecurso' %}
                     <a class="btn btn-light"   href="{% url 'adicionar_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" role="button">
                         Nova Exigência
                     </a>
@@ -100,16 +109,29 @@
                             </tr>
                         </thead>
                         <tbody>
+                        {% if requerimento.get_class_name == 'RequerimentoInicial' %}
                             {% for exigencia in exigencias_requerimento %}
                             <tr>
                                 <td>{{ exigencia.data|date:"d/m/Y" }}</td>
                                 <td>{{ exigencia.natureza }}</td>
                                 <td>{{ exigencia.estado }}</td>
                                 <td >
-                                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
-                                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                                    <a href="{% url 'atualizar_exigencia_requerimento_inicial' cliente.cpf requerimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                    <a href="{% url 'excluir_exigencia_requerimento_inicial' cliente.cpf requerimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
                             </tr>
                             {% endfor %}
+                        {% elif requerimento.get_class_name == 'RequerimentoRecurso' %}
+                            {% for exigencia in exigencias_requerimento %}
+                            <tr>
+                                <td>{{ exigencia.data|date:"d/m/Y" }}</td>
+                                <td>{{ exigencia.natureza }}</td>
+                                <td>{{ exigencia.estado }}</td>
+                                <td >
+                                    <a href="{% url 'atualizar_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                    <a href="{% url 'excluir_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>

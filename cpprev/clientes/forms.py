@@ -24,6 +24,11 @@ class ClienteModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ClienteModelForm, self).__init__(*args, **kwargs)
+
+        # Desabilitar o campo CPF no update
+        if self.instance and self.instance.pk:
+            self.fields['cpf'].disabled = True
+
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field('cpf', css_class='form-control'),
@@ -80,6 +85,14 @@ class RequerimentoInicialModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(RequerimentoInicialModelForm, self).__init__(*args, **kwargs)
+        
+        # Desabilitar o campo CPF no update
+        if self.instance and self.instance.pk:
+            self.fields['protocolo'].disabled = True
+            self.fields['NB'].disabled = True
+            self.fields['requerente_titular'].disabled = True
+            self.fields['servico'].disabled = True
+        
         self.fields['estado'].queryset = EstadoRequerimentoInicial.objects.all()
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -110,6 +123,14 @@ class RequerimentoRecursoModelForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(RequerimentoRecursoModelForm, self).__init__(*args, **kwargs)
+
+        # Desabilitar o campo CPF no update
+        if self.instance and self.instance.pk:
+            self.fields['protocolo'].disabled = True
+            self.fields['NB'].disabled = True
+            self.fields['requerente_titular'].disabled = True
+            self.fields['servico'].disabled = True
+
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field('protocolo'),

@@ -41,13 +41,13 @@
             <td>{{ cliente.email }}</td>
             <td>
               <a
-                href=""
-                class="btn btn-warning" atitle="Editar"
+                href="{% url 'atualizar_cliente' cliente.cpf %}"
+                class="btn btn-warning"
                 >{% bs_icon 'pencil-square' %}</a
               >
               <a
-                href=""
-                class="btn btn-danger" atitle="Excluir"
+                href="{% url 'excluir_cliente' pk=cliente.cpf %}"
+                class="btn btn-danger"
                 >{% bs_icon 'file-x' %}</a
               >
             </td>

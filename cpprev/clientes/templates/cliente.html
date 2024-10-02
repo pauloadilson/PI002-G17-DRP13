@@ -8,9 +8,9 @@
             <div class='row'>
                 <div class='display-5 col-sm-8'>Cliente</div>
                 <div class='display-5 col-sm-4'>
-                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                    <a href="{% url 'atualizar_cliente' cliente.cpf %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
                     {% if qtde_instancias_filhas == 0 %}
-                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                    <a href="{% url 'excluir_cliente' cliente.cpf %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
                     {% endif %}
                 </div>
             </div>
@@ -78,8 +78,8 @@
                                 <td>{{ requerimento.estado }}</td>
                                 <td>{{ requerimento.observacao }}</td>
                                 <td >
-                                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
-                                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                                    <a href="{% url 'atualizar_requerimento_inicial' cliente.cpf requerimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                    <a href="{% url 'excluir_requerimento_inicial' cliente.cpf requerimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -126,8 +126,8 @@
                                 <td>{{ recurso.estado }}</td>
                                 <td>{{ recurso.observacao }}</td>
                                 <td >
-                                    <a href="" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
-                                    <a href="" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                                    <a href="{% url 'atualizar_requerimento_recurso' cliente.cpf recurso.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                    <a href="{% url 'excluir_requerimento_recurso' cliente.cpf recurso.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
                                 </td>
                             </tr>
                             {% endfor %}

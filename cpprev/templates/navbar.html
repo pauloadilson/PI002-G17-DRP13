@@ -17,14 +17,22 @@
           <li class="nav-item">
             <a class="nav-link" aria-current="page" href="{% url 'clientes' %}">Clientes</a>
           </li>
-          <li class="nav-item">
             <a class="nav-link" href="">Prazos</a>
           </li>
-            {% if request.user.groups.all.0.name != "secretarias"%}
-            <li class="nav-item">
-              <a class="nav-link disabled" aria-disabled="true" href="#">Pagamentos</a>
-            </li>
-            {% endif %}
+          </li>
+            <a class="nav-link disabled" href="">Atendimentos</a>
+          </li>
+          </li>
+            <a class="nav-link disabled" href="">Contratos</a>
+          </li>
+          {% if request.user.groups.all.0.name != "secretarias"%}
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true" href="#">Pagamentos</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true" href="#">Cálculos</a>
+          </li>
           <li class="nav-item">
             <form method="POST" action="{% url 'logout' %}">
               {% csrf_token %}
