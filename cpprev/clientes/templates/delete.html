@@ -34,7 +34,7 @@
                 {% elif result.get_class_name == 'ExigenciaRequerimentoInicial' %}
                     Excluir <a href="{% url 'excluir_exigencia_requerimento_inicial' result.requerimento.requerente_titular.cpf result.requerimento.id %}">  {{ result }} </a>
                 {% elif result.get_class_name == 'ExigenciaRequerimentoRecurso' %}
-                    Excluir <a href="{% url 'excluir_exigencia_requerimento_recurso' result.requerente_titular.cpf result.requerimento.id %}">  {{ result }} </a>
+                    Excluir <a href="{% url 'excluir_exigencia_requerimento_recurso' result.requerimento.requerente_titular.cpf result.requerimento.id %}">  {{ result }} </a>
                 {% endif %}
                 </li>
                 {% endfor %}

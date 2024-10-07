@@ -397,7 +397,6 @@ class RequerimentoInicialDeleteView(DeleteView):
         context["tipo_objeto"] = self.tipo_objeto
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         context["result_list"] = result_list
-        print(result_list[0].requerimento.requerente_titular.cpf)
         return context
     
     def get_object(self, queryset=None):
@@ -412,6 +411,7 @@ class RequerimentoInicialDeleteView(DeleteView):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class RequerimentoRecursoDeleteView(DeleteView):
     model = RequerimentoRecurso
+    template_name = "delete.html"
     title = "Excluindo Recurso"
     tipo_objeto = "o recurso"
 
