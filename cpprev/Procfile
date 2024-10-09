@@ -1,1 +1,0 @@
-web: gunicorn cpprev.wsgi --log-file -
