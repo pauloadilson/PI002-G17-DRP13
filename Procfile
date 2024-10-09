@@ -1,1 +1,1 @@
-web: gunicorn cpprev.wsgi
+web: gunicorn cpprev.cpprev.wsgi
