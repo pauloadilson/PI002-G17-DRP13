@@ -93,7 +93,7 @@ DATABASES = {
         'HOST': os.environ.get('DATABASE_HOST'),
         'PORT': os.environ.get('DATABASE_PORT'),
         'TEST': {
-            'NAME': 'test_db-cp-prev-pic2',
+            'NAME': os.environ.get('TEST_DB_NAME'),
         },
         'OPTIONS': {
             'options': '-c client_encoding=UTF8',
