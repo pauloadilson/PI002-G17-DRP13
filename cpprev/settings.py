@@ -48,7 +48,10 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_bootstrap_icons",
     "login",
+    'eventos',
+    'django_extensions',
 ]
+# python manage.py runserver_plus --cert-file cert.pem --key-file key.pem
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -158,3 +161,17 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals())
+
+# Configuracoes de integração com o Microsoft Graph
+MICROSOFT_CLIENT_ID = os.environ.get('MICROSOFT_CLIENT_ID')
+MICROSOFT_CLIENT_SECRET = os.environ.get('MICROSOFT_CLIENT_SECRET')
+MICROSOFT_AUTHORITY = os.environ.get('MICROSOFT_AUTHORITY')
+MICROSOFT_REDIRECT_URI = os.environ.get('MICROSOFT_REDIRECT_URI')
+MICROSOFT_CLIENT_EMAIL= os.environ.get('MICROSOFT_CLIENT_EMAIL')
+MICROSOFT_SCOPES = ['Calendars.ReadWrite','User.Read']
+
+# Configurações de segurança
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
