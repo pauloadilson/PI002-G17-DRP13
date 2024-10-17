@@ -1,0 +1,7 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "ms-python.black-formatter",
+  "files.associations": {
+	"**/templates/**/*.html":"django-html"
+	}
+}

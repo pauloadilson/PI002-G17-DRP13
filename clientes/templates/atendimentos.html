@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+
+{% block content %}
+{% load django_bootstrap5 %}
+
+<main class="content mb-5">
+  <div class="container-fluid">
+    <div class="p-1 mt-3">
+      <div class="display-5">Atendimentos</div>
+      <hr />
+      <p class="d-inline-flex gap-1">
+        <a
+          class="btn btn-light"
+          href="{% url 'adicionar_atendimento' %}"
+          role="button"
+        >
+          Novo Atendimento
+        </a>
+      </p>
+    </div>
+
+    <div class="p-1 overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Data</th>
+            <th>Cliente</th>
+            <th>Requerimento</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for atendimento in atendimentos %}
+          <tr>
+            <td>
+              <a href="{% url 'atendimento' atendimento.id %}">
+                {{ atendimento.id }}
+              </a>
+            </td>
+            <td>{{ atendimento.data }}</td>
+            <td>{{ atendimento.cliente.nome }}</td>
+            <td>{{ atendimento.requerimento.NB }}</td>
+            <td>
+              <a
+                href="{% url 'atualizar_atendimento' atendimento.id %}"
+                class="btn btn-warning"
+                >{% bs_icon 'pencil-square' %}</a
+              >
+              <a
+                href="{% url 'excluir_atendimento' pk=atendimento.id %}"
+                class="btn btn-danger"
+                >{% bs_icon 'file-x' %}</a
+              >
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+{% endblock content %}
