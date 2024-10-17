@@ -48,7 +48,11 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_bootstrap_icons",
     "login",
+    'microsoft_auth',
+    'django.contrib.sites',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'microsoft_auth.context_processors.microsoft',
             ],
         },
     },
@@ -158,3 +163,16 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals())
+
+MICROSOFT_AUTH_CLIENT_ID = os.environ.get('MICROSOFT_AUTH_CLIENT_ID')
+MICROSOFT_AUTH_CLIENT_SECRET = os.environ.get('MICROSOFT_AUTH_CLIENT_SECRET')
+MICROSOFT_AUTH_TENANT_ID = os.environ.get('MICROSOFT_AUTH_TENANT_ID')
+MICROSOFT_AUTH_REDIRECT_URI=os.environ.get('MICROSOFT_AUTH_REDIRECT_URI')
+MICROSOFT_AUTH_CLIENT_EMAIL=os.environ.get('MICROSOFT_AUTH_CLIENT_EMAIL')
+MICROSOFT_AUTH_LOGIN_TYPE = 'ma' # 'ma' para contas Microsoft
+MICROSOFT_AUTH_SCOPES = ['Calendars.ReadWrite','User.Read']
+
+AUTHENTICATION_BACKENDS = [
+    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
