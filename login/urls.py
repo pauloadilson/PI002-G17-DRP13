@@ -7,5 +7,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page='signout'), name='logout'),
     path('microsoft_signin', sign_in, name='signin'),
     path('microsoft_signout', sign_out, name='signout'),
-    path('microsoft_callback', callback, name='callback'),
+    path('callback/', callback, name='callback'),
+    
 ]

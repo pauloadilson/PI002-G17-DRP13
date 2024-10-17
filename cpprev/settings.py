@@ -48,8 +48,6 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_bootstrap_icons",
     "login",
-    'microsoft_auth',
-    'django.contrib.sites',
 ]
 
 SITE_ID = 1
@@ -77,7 +75,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'microsoft_auth.context_processors.microsoft',
             ],
         },
     },
@@ -171,8 +168,3 @@ MICROSOFT_AUTH_REDIRECT_URI=os.environ.get('MICROSOFT_AUTH_REDIRECT_URI')
 MICROSOFT_AUTH_CLIENT_EMAIL=os.environ.get('MICROSOFT_AUTH_CLIENT_EMAIL')
 MICROSOFT_AUTH_LOGIN_TYPE = 'ma' # 'ma' para contas Microsoft
 MICROSOFT_AUTH_SCOPES = os.environ.get('MICROSOFT_AUTH_SCOPES').split(',')
-
-AUTHENTICATION_BACKENDS = [
-    'microsoft_auth.backends.MicrosoftAuthenticationBackend',
-    'django.contrib.auth.backends.ModelBackend',
-]

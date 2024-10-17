@@ -2,13 +2,8 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
 
-from django.shortcuts import redirect
-from django.conf import settings
-from microsoft_auth.client import MicrosoftClient
-from django.contrib.auth import login as auth_login
 
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .auth_helper import get_sign_in_flow, get_token_from_code, store_user, remove_user_and_token, get_token
 from .graph_helper import *

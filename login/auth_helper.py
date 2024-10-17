@@ -1,8 +1,7 @@
-import yaml
 import msal
 import os
 import time
-from django.conf import settings
+from django.conf import settings as django_settings
 
 def load_cache(request):
   # Check for a token cache in the session
@@ -19,9 +18,9 @@ def save_cache(request, cache):
 def get_msal_app(cache=None):
   # Initialize the MSAL confidential client
   auth_app = msal.ConfidentialClientApplication(
-    settings.MICROSOFT_AUTH_CLIENT_ID,
-    authority=settings.MICROSOFT_AUTH_TENANT_ID,
-    client_credential=settings.MICROSOFT_AUTH_CLIENT_SECRET,
+    django_settings.MICROSOFT_AUTH_CLIENT_ID,
+    authority=django_settings.MICROSOFT_AUTH_TENANT_ID,
+    client_credential=django_settings.MICROSOFT_AUTH_CLIENT_SECRET,
     token_cache=cache)
   return auth_app
 
@@ -29,8 +28,8 @@ def get_msal_app(cache=None):
 def get_sign_in_flow():
   auth_app = get_msal_app()
   return auth_app.initiate_auth_code_flow(
-    settings.MICROSOFT_AUTH_SCOPES,
-    redirect_uri=settings.MICROSOFT_AUTH_REDIRECT_URI)
+    django_settings.MICROSOFT_AUTH_SCOPES,
+    redirect_uri=django_settings.MICROSOFT_AUTH_REDIRECT_URI)
 
 # Method to exchange auth code for access token
 def get_token_from_code(request):
@@ -63,7 +62,7 @@ def get_token(request):
   accounts = auth_app.get_accounts()
   if accounts:
     result = auth_app.acquire_token_silent(
-      settings.MICROSOFT_AUTH_SCOPES,
+      django_settings.MICROSOFT_AUTH_SCOPES,
       account=accounts[0])
     save_cache(request, cache)
 
