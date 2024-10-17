@@ -170,7 +170,7 @@ MICROSOFT_AUTH_TENANT_ID = os.environ.get('MICROSOFT_AUTH_TENANT_ID')
 MICROSOFT_AUTH_REDIRECT_URI=os.environ.get('MICROSOFT_AUTH_REDIRECT_URI')
 MICROSOFT_AUTH_CLIENT_EMAIL=os.environ.get('MICROSOFT_AUTH_CLIENT_EMAIL')
 MICROSOFT_AUTH_LOGIN_TYPE = 'ma' # 'ma' para contas Microsoft
-MICROSOFT_AUTH_SCOPES = ['Calendars.ReadWrite','User.Read']
+MICROSOFT_AUTH_SCOPES = os.environ.get('MICROSOFT_AUTH_SCOPES').split(',')
 
 AUTHENTICATION_BACKENDS = [
     'microsoft_auth.backends.MicrosoftAuthenticationBackend',
