@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_bootstrap_icons",
     "login",
+    "agenda",
 ]
 
 SITE_ID = 1

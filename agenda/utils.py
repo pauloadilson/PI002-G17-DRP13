@@ -1,28 +1,16 @@
+from django.shortcuts import redirect
+from django.http import HttpResponse, JsonResponse
 import requests
-import json
 from login.auth_helper import get_token
+from login.graph_helper import graph_url, get_user,  get_calendar_events
+#client = ConfidentialClientApplication(client_id=client_id, client_credential=client_secret)
+#authorization_url = client.get_authorization_request_url(scope)
+#print(authorization_url)
 
-graph_url = 'https://graph.microsoft.com/v1.0'
-
-def get_user(token):
-    # Send GET to /me
-    user = requests.get(f'{graph_url}/me',
-    headers={'Authorization': f"Bearer {token}"},
-    params={
-'$select':'displayName,mail,mailboxSettings,userPrincipalName'})
-    return user.json()
-
-def get_calendar_events(token):
-    # Send GET to /me/events
-    events = requests.get(f'{graph_url}/me/events',
-    headers = {'Authorization': f"Bearer {token}"}, 
-    params={'$select':'subject,start,end, loccation'})
-    return events.json()
-
-
-def criar_evento_no_microsoft_graph(request, evento):
+      
+def criar_evento_no_microsoft_graph(evento):
     print('Entrando em criar evento')
-    access_token = get_token(request)
+    access_token = get_token(requests)
     url = f"{graph_url}/me/events"
 
     headers = {
