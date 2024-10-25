@@ -3,7 +3,8 @@ from django import forms
 from django.forms.renderers import BaseRenderer
 from django.forms.utils import ErrorList
 from clientes.models import (
-    Cliente, 
+    Cliente,
+    HistoricoMudancaEstadoRequerimentoInicial, 
     RequerimentoInicial, 
     RequerimentoRecurso, 
     Exigencia, 
@@ -89,9 +90,9 @@ class RequerimentoInicialModelForm(forms.ModelForm):
         # Desabilitar o campo CPF no update
         if self.instance and self.instance.pk:
             self.fields['protocolo'].disabled = True
-            self.fields['NB'].disabled = True
             self.fields['requerente_titular'].disabled = True
             self.fields['servico'].disabled = True
+            self.fields['estado'].disabled = True
         
         self.fields['estado'].queryset = EstadoRequerimentoInicial.objects.all()
         self.helper = FormHelper()
@@ -124,12 +125,12 @@ class RequerimentoRecursoModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RequerimentoRecursoModelForm, self).__init__(*args, **kwargs)
 
-        # Desabilitar o campo CPF no update
+        # Desabilitar os campos  no update
         if self.instance and self.instance.pk:
             self.fields['protocolo'].disabled = True
-            self.fields['NB'].disabled = True
             self.fields['requerente_titular'].disabled = True
             self.fields['servico'].disabled = True
+            self.fields['estado'].disabled = True
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -160,7 +161,12 @@ class ExigenciaModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ExigenciaModelForm, self).__init__(*args, **kwargs)
+
+
         self.fields['estado'].queryset = EstadoExigencia.objects.all()
+        if self.instance and self.instance.pk:
+            self.fields['requerimento'].disabled = True
+        
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Field('requerimento', css_class='form-control', type='hidden'),
@@ -172,6 +178,7 @@ class ExigenciaModelForm(forms.ModelForm):
                 Button('button', 'Voltar', css_class='btn btn-secondary', onclick='window.history.back()'),
             )
         )
+        
 
     def save(self, commit=True):
         return super(ExigenciaModelForm, self).save(commit=commit)
@@ -206,3 +213,44 @@ class EstadoRequerimentoRecursoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nome'].choices = EstadoRequerimentoRecurso().get_estados()
+
+# Formulário personalizado para RequerimentoInicialCienciaView
+class RequerimentoInicialCienciaForm(forms.ModelForm):
+    class Meta:
+        model = RequerimentoInicial
+        fields = ['estado', 'observacao']
+
+    def __init__(self, *args, **kwargs):
+        super(RequerimentoInicialCienciaForm, self).__init__(*args, **kwargs)
+        
+        self.fields['estado'].queryset = EstadoRequerimentoInicial.objects.all()
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('estado'),
+            Field('observacao'),
+            FormActions(
+                Submit('submit', 'Salvar', css_class='btn btn-primary'),
+                Button('button', 'Voltar', css_class='btn btn-secondary', onclick='window.history.back()'),
+            )
+        )
+
+class MudancaEstadoRequerimentoInicialForm(forms.ModelForm):
+    class Meta:
+        model = HistoricoMudancaEstadoRequerimentoInicial
+        fields = ['estado_anterior','estado_novo', 'observacao','data_mudanca']
+
+    def __init__(self, *args, **kwargs):
+        super(MudancaEstadoRequerimentoInicialForm, self).__init__(*args, **kwargs)
+        self.fields['estado_novo'].queryset = EstadoRequerimentoInicial.objects.all()
+        self.fields['estado_anterior'].disabled = True  # Desabilita o campo estado_anterior
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Field('estado_anterior'),
+            Field('estado_novo'),
+            Field('observacao'),
+            Field('data_mudanca', css_class='form-control date_picker', placeholder='dd/mm/aaaa'),
+            FormActions(
+                Submit('submit', 'Salvar', css_class='btn btn-primary'),
+                Button('button', 'Voltar', css_class='btn btn-secondary', onclick='window.history.back()'),
+            )
+        )

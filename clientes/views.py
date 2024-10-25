@@ -1,3 +1,4 @@
+import datetime
 from django.http import Http404
 from django.db.models.base import Model as Model
 from django.views.generic import (
@@ -12,7 +13,8 @@ from django.views.generic.edit import FormView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from clientes.models import (
-    Cliente, 
+    Cliente,
+    HistoricoMudancaEstadoRequerimentoInicial, 
     Requerimento,
     RequerimentoInicial, 
     RequerimentoRecurso, 
@@ -22,7 +24,9 @@ from clientes.models import (
 )
 from clientes.forms import (
     ClienteModelForm, 
-    EscolhaTipoRequerimentoForm, 
+    EscolhaTipoRequerimentoForm,
+    MudancaEstadoRequerimentoInicialForm,
+    RequerimentoInicialCienciaForm, 
     RequerimentoInicialModelForm, 
     RequerimentoRecursoModelForm, 
     ExigenciaRequerimentoInicialModelForm,
@@ -31,8 +35,7 @@ from clientes.forms import (
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from itertools import chain
-#from datetime import datetime, timedelta
-
+from django.utils import timezone
 # Create your views here.
 class IndexView(TemplateView):
     template_name = "index.html"
@@ -595,3 +598,65 @@ class ExigenciaRequerimentoRecursoDeleteView(DeleteView):
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
+    
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class RequerimentoInicialCienciaView(UpdateView):
+    model = RequerimentoInicial
+    template_name = "form.html"
+    form_class = RequerimentoInicialCienciaForm
+    title = "Ciência no Requerimento Inicial"
+    form_title_identificador = None
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.is_deleted:
+            raise Http404("Requerimento não encontrado")
+        return obj
+
+    def get_success_url(self):
+        return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.object.id})
+
+    def get_context_data(self, **kwargs):
+        context = super(RequerimentoInicialCienciaView, self).get_context_data(**kwargs)
+        context["title"] = self.title
+        context["form_title_identificador"] = f'NB nº {self.object.NB}'
+        return context
+    
+    def form_valid(self, form):
+        requerimento = form.save(commit=False)
+        estado_anterior = requerimento.estado
+        requerimento.save()
+        HistoricoMudancaEstadoRequerimentoInicial.objects.create(
+            requerimento=requerimento,
+            estado_anterior=estado_anterior,
+            estado_novo=requerimento.estado,
+            data_mudanca=timezone.now(),
+            observacao=requerimento.observacao
+        )
+        return super().form_valid(form)
+    
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class MudancaEstadoRequerimentoInicialView(CreateView):
+    model = HistoricoMudancaEstadoRequerimentoInicial
+    template_name = "form.html"
+    form_class = MudancaEstadoRequerimentoInicialForm
+    title = "Ciência no Requerimento Inicial"
+    form_title_identificador = None
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["requerimento"] = RequerimentoInicial.objects.filter(is_deleted=False).get(id=self.kwargs["pk"])
+        initial["estado_anterior"] = RequerimentoInicial.objects.filter(is_deleted=False).get(id=self.kwargs["pk"]).estado
+        return initial
+    
+    def form_valid(self, form):
+        form.instance.requerimento = RequerimentoInicial.objects.get(id=self.kwargs["pk"])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
+
+    def get_context_data(self, **kwargs):
+        context = super(MudancaEstadoRequerimentoInicialView, self).get_context_data(**kwargs)
+        context["title"] = self.title
+        return context

@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 
 # Create your models here.
@@ -67,7 +68,8 @@ class Requerimento(models.Model):
 class EstadoRequerimentoInicial(models.Model):
     ESTADOS_INICIAIS = [
         ('em análise', 'Em Análise'),
-        ('concluído', 'Concluído'),
+        ('concluído deferido', 'Concluído Deferido'),
+        ('concluído indeferido', 'Concluído Indeferido'),
     ]
     
     id = models.AutoField(primary_key=True) # ID do estado
@@ -177,3 +179,16 @@ class Documento(models.Model):
 
     def __str__(self) -> str:
         return f'{self.nome_arquivo}' # Retorna o nome do documento
+    
+
+class HistoricoMudancaEstadoRequerimentoInicial(models.Model):
+    id = models.AutoField(primary_key=True) # ID do historico de estado do requerimento
+    requerimento = models.ForeignKey(RequerimentoInicial, on_delete=models.PROTECT, related_name='historico_estado_requerimento')
+    estado_anterior = models.ForeignKey(EstadoRequerimentoInicial, on_delete=models.SET_NULL, null=True, related_name='estado_anterior')
+    estado_novo = models.ForeignKey(EstadoRequerimentoInicial, on_delete=models.PROTECT, related_name='estado_novo')
+    observacao = models.TextField(blank=True, null=True)
+    data_mudanca = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.requerimento.protocolo} do estado {self.estado_anterior.nome} para {self.estado_novo.nome} em {self.data_mudanca}"
+    

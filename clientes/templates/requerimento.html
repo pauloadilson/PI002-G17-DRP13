@@ -83,9 +83,15 @@
                     <a class="btn btn-light"   href="{% url 'adicionar_exigencia_requerimento_inicial' cliente.cpf requerimento.id %}" role="button">
                         Nova Exigência
                     </a>
+                    <a class="btn btn-light"   href="{% url 'ciencia_requerimento_inicial' cliente.cpf requerimento.id %}" role="button">
+                        Ciência {% bs_icon 'check2-circle' %}
+                    </a>
                 {% elif requerimento.get_class_name == 'RequerimentoRecurso' %}
                     <a class="btn btn-light"   href="{% url 'adicionar_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" role="button">
                         Nova Exigência
+                    </a>
+                    <a class="btn btn-light"   href="{% url 'ciencia_requerimento_recurso' cliente.cpf requerimento.id %}" role="button">
+                        Ciência
                     </a>
                 {% endif %}
             </p>

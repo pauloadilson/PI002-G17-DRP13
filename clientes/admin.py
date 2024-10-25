@@ -1,7 +1,8 @@
 from django.contrib import admin
 # from .models import Cliente, RequerimentoInicial, RequerimentoRecurso, Estado, EstadoRequerimentoInicial, EstadoRequerimentoRecurso,  HistoricoEstadoRequerimento, Servico, Exigencia, Natureza, EstadoExigencia, HistoricoEstadoExigencia
 from .models import (
-    Cliente, 
+    Cliente,
+    HistoricoMudancaEstadoRequerimentoInicial, 
     Requerimento, 
     RequerimentoInicial, 
     RequerimentoRecurso, 
@@ -74,3 +75,8 @@ class EstadoExigenciaAdmin(admin.ModelAdmin):
 class NaturezaAdmin(admin.ModelAdmin):
     list_display = ('id', 'nome')
     search_fields = ('nome',)
+
+@admin.register(HistoricoMudancaEstadoRequerimentoInicial)
+class HistoricoMudancaEstadoRequerimentoInicialAdmin(admin.ModelAdmin):
+    list_display = ('id', 'requerimento', 'estado_anterior', 'estado_novo', 'data_mudanca', 'observacao')
+    search_fields = ('requerimento__NB', 'requerimento__requerente_titular__nome', 'requerimento__requerente_titular__cpf')
