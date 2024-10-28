@@ -15,6 +15,22 @@
         <div class="p-1">
             <div id="calendar"></div>
         </div>
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="eventModalTitle">Detalhes do Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <!-- Conteúdo do evento será inserido aqui -->
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
   </div>
   <script>
@@ -34,13 +50,49 @@
             {% for evento in agenda %}
             {
               title: '{{ evento.titulo }}',
+              tipo: '{{ evento.tipo }}',
+              descricao: '{{ evento.descricao }}',
               start: '{{ evento.data_inicio|date:"Y-m-d\TH:i:s" }}',
               end: '{{ evento.data_fim|date:"Y-m-d\TH:i:s" }}',
-              url: '{% url "evento" evento.id %}',
+              local: '{{ evento.local }}',
+              //url: '{% url "evento" evento.id %}',
+              id: '{{ evento.id }}'
             },
             {% endfor %}
-            ]
-        });
+            ],
+            eventClick: function(info) {
+                info.jsEvent.preventDefault(); // don't let the browser navigate
+
+                // Fetch event details using AJAX
+                fetch(`/evento/${info.event.id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the modal with event details
+                        var modalTitle = document.getElementById('eventModalTitle');
+                        var modalBody = document.querySelector('#eventModal .modal-body');
+
+                        modalTitle.textContent = data.titulo;
+                        modalBody.innerHTML = `
+                        <dl class="row">
+                                <dt class="col-sm-3">Tipo</dt>
+                                <dd class="col-sm-9">${data.tipo}</dd>
+                            
+                                <dt class="col-sm-3">Descrição</dt>
+                                <dd class="col-sm-9">${data.descricao}</dd>
+                            
+                                <dt class="col-sm-3 text-truncate">Data/Hora</dt>
+                                <dd class="col-sm-9">${data.data_inicio}</dd>
+                                
+                                <dt class="col-sm-3">Local</dt>
+                                <dd class="col-sm-9">${data.local}</dd>
+                            </dl>
+                        `;
+                        // Show the modal
+                        var eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+                        eventModal.show(); 
+                    });
+                }
+            });
         calendar.render();
         {% if messages %}
         {% for message in messages %}

@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
 from django.shortcuts import render, redirect
+from django.views import View
 from django.views.generic import (
     ListView, 
     CreateView, 
@@ -80,19 +82,20 @@ class EventoCreateView(CreateView):
         context['title'] = self.title
         return context
     
-# Exibe detalhes de um evento
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class EventoDetailView(DetailView):
-    model = Evento
-    template_name = 'evento.html'
-    title = "Detalhes do Evento"
-
-    def get_context_data(self, **kwargs):
-        context = super(EventoDetailView, self).get_context_data(**kwargs)
-        # adicionar o título da página e o título do formulário ao contexto
-        context['title'] = self.title
-        return context
-
+class EventoDetailView(View):
+    def get(self, request, pk):
+        evento = get_object_or_404(Evento, id=pk)
+        data = {
+            'titulo': evento.titulo,
+            'tipo': evento.tipo.capitalize(),
+            'descricao': evento.descricao,
+            'data_inicio': evento.data_inicio.strftime('%d/%m/%Y às %H:%M'),
+            'data_fim': evento.data_fim.strftime('%d/%m/%Y %H:%M'),
+            'local': evento.local,
+        }
+        return JsonResponse(data)
+    
 # Edita um evento existente
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class EventoUpdateView(UpdateView):

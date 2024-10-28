@@ -24,11 +24,17 @@
         jQuery('.date_timepicker_start').datetimepicker({
             format:'d/m/Y H:i',
             mask:true,
+            step: 30,
+            minTime:'09:00',
+            maxTime:'18:00',
             theme:'dark',
             minDate: 0
           });
           jQuery('.date_timepicker_end').datetimepicker({
             format:'d/m/Y H:i',
+            step: 30,
+            minTime:'09:00',
+            maxTime:'18:00',
             onShow:function( ct ){
                 this.setOptions({
                  minDate:jQuery('.date_timepicker_start').val()
