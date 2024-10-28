@@ -18,8 +18,8 @@ class EventoForm(forms.ModelForm):
             Field('tipo', css_class='form-control'),
             Field('titulo', css_class='form-control'),
             Field('descricao', css_class='form-control'),
-            Field('data_inicio', css_class='form-control date_picker', placeholder='dd/mm/aaaa'),
-            Field('data_fim', css_class='form-control date_picker', placeholder='dd/mm/aaaa'),
+            Field('data_inicio', css_class='form-control datetimepicker', placeholder='dd/mm/aaaa hh:mm'),
+            Field('data_fim', css_class='form-control datetimepicker', placeholder='dd/mm/aaaa hh:mm'),
             Field('local', css_class='form-control'),
             FormActions(
                 Submit('submit', 'Salvar', css_class='btn btn-primary'),

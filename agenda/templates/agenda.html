@@ -41,7 +41,20 @@
             ]
         });
         calendar.render();
+        {% if messages %}
+        {% for message in messages %}
+            Swal.fire({
+                icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% elif message.tags == "info" %}info{% else %}question{% endif %}',
+                title: '{{ message }}',
+                showConfirmButton: false,
+                timer: 3000
+                });
+            {% endfor %}
+        {% endif %}
       });
+        document.addEventListener('DOMContentLoaded', function() {
+
+        });
     </script>
   </main>
     {% endblock %}
