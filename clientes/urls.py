@@ -7,7 +7,8 @@ from clientes.views import (
     ClienteDetailView,
     ClienteUpdateView,
     ClienteDeleteView,
-    MudancaEstadoRequerimentoInicialView,
+    MudancaEstadoRequerimentoInicialCreateView,
+    MudancaEstadoRequerimentoInicialDeleteView,
     RequerimentoInicialCreateView,
     RequerimentoInicialDetailView,
     RequerimentoInicialUpdateView,
@@ -41,7 +42,8 @@ urlpatterns = [
             path("<int:pk>", RequerimentoInicialDetailView.as_view(), name="requerimento_inicial"),
             path("<int:pk>/atualizar", RequerimentoInicialUpdateView.as_view(), name="atualizar_requerimento_inicial"),
             path("<int:pk>/excluir", RequerimentoInicialDeleteView.as_view(), name="excluir_requerimento_inicial"),
-            path("<int:pk>/ciencia", MudancaEstadoRequerimentoInicialView.as_view(), name="ciencia_requerimento_inicial"),
+            path("<int:pk>/ciencia", MudancaEstadoRequerimentoInicialCreateView.as_view(), name="ciencia_requerimento_inicial"),
+            path("<int:pk>/excluir_mudanca_estado", MudancaEstadoRequerimentoInicialDeleteView.as_view(), name="excluir_mudanca_estado_requerimento_inicial"),
             
     ])),
     path("requerimento_recurso/<int:cpf>/", include ([

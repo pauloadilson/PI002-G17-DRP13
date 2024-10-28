@@ -36,6 +36,7 @@
               title: '{{ evento.titulo }}',
               start: '{{ evento.data_inicio|date:"Y-m-d\TH:i:s" }}',
               end: '{{ evento.data_fim|date:"Y-m-d\TH:i:s" }}',
+              url: '{% url "evento" evento.id %}',
             },
             {% endfor %}
             ]
@@ -52,9 +53,6 @@
             {% endfor %}
         {% endif %}
       });
-        document.addEventListener('DOMContentLoaded', function() {
-
-        });
     </script>
   </main>
     {% endblock %}

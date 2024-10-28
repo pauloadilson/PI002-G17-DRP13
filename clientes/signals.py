@@ -18,7 +18,7 @@ def registrar_mudanca_estado_requerimento_inicial(sender, instance, created, **k
     if requerimento_inicial.estado.nome == 'concluído indeferido':
         print('Recebendo sinal de novo estado concluído indeferido')
         # Criando evento Prazo para recurso indeferido
-        data_inicio = instance.data_mudanca + timedelta(days=30)
+        data_inicio = instance.data_mudanca + timedelta(days=30, hours=17)
         data_fim = data_inicio + timedelta(hours=1)
         evento = Evento.objects.create(
             tipo='prazo',

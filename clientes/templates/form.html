@@ -21,15 +21,27 @@
     <script>
 
         jQuery.datetimepicker.setLocale('pt-BR');
-        jQuery('.datetimepicker').datetimepicker({
+        jQuery('.date_timepicker_start').datetimepicker({
             format:'d/m/Y H:i',
             mask:true,
-            theme:'dark'
+            theme:'dark',
+            minDate: 0
+          });
+          jQuery('.date_timepicker_end').datetimepicker({
+            format:'d/m/Y H:i',
+            onShow:function( ct ){
+                this.setOptions({
+                 minDate:jQuery('.date_timepicker_start').val()
+                })
+               },
+            mask:true,
+            theme:'dark',
           });
           jQuery('.date_picker').datetimepicker({
             format:'d/m/Y',
             theme:'dark',
-            timepicker:false
+            timepicker:false,
+            maxDate: 0
           });
           // https://xdsoft.net/jqplugins/datetimepicker/
     </script>

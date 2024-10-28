@@ -87,6 +87,11 @@ class RequerimentoInicial(Requerimento):
             requerimento=self
             )
         return len(lista_exigencias)
+    
+    @property
+    def total_mudancas_estado(self):
+        lista_mudancas_estado = HistoricoMudancaEstadoRequerimentoInicial.objects.filter(requerimento=self)
+        return len(lista_mudancas_estado)
 
 class EstadoRequerimentoRecurso(models.Model):
     ESTADOS_RECURSOS = [
@@ -165,6 +170,8 @@ class Atendimento(models.Model):
     descricao = models.TextField(blank=True, null=True) # Descricao do atendimento
     observacao = models.TextField(blank=True, null=True) # Observacao do atendimento
 
+    is_deleted = models.BooleanField(default=False)
+    
     def __str__(self) -> str:
         return f'Atendimento: id nº {self.id} de {self.cliente.nome}, {self.cliente.cpf}' # Retorna o nome do atendimento
 
@@ -177,6 +184,8 @@ class Documento(models.Model):
     requerimento = models.ForeignKey(Requerimento, on_delete=models.PROTECT, related_name='requerimento_documento', blank=True, null=True) # Relacionamento com o modelo Requerimento
     exigencia = models.ForeignKey(Exigencia, on_delete=models.PROTECT, related_name='exigencia_documento', blank=True, null=True) # Relacionamento com o modelo Exigencia
 
+    is_deleted = models.BooleanField(default=False)
+
     def __str__(self) -> str:
         return f'{self.nome_arquivo}' # Retorna o nome do documento
     
@@ -188,6 +197,8 @@ class HistoricoMudancaEstadoRequerimentoInicial(models.Model):
     estado_novo = models.ForeignKey(EstadoRequerimentoInicial, on_delete=models.PROTECT, related_name='estado_novo')
     observacao = models.TextField(blank=True, null=True)
     data_mudanca = models.DateTimeField()
+
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.requerimento.protocolo} do estado {self.estado_anterior.nome} para {self.estado_novo.nome} em {self.data_mudanca}"

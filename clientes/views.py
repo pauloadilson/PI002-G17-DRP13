@@ -12,6 +12,7 @@ from django.views.generic import (
 from django.views.generic.edit import FormView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from agenda.models import Evento
 from clientes.models import (
     Cliente,
     HistoricoMudancaEstadoRequerimentoInicial, 
@@ -43,7 +44,11 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, any]:
         context = super(IndexView, self).get_context_data(**kwargs)
+        eventos = Evento.objects.filter(
+            data_inicio__gte=timezone.localdate(),
+            ).order_by('data_inicio')[:5]
         context["title"] = self.title
+        context["agenda"] = eventos
         return context
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -290,12 +295,17 @@ class RequerimentoInicialDetailView(DetailView):
         cliente = Cliente.objects.filter(is_deleted=False).filter(cpf__icontains=cliente_id)[
             0
         ]  # .order_by('nome') '-nome' para ordem decrescente
-        exigencias_requerimento = self.object.requerimento_exigencia.filter(is_deleted=False).filter(requerimento__id=self.object.id)
-        qtde_instancias_filhas = self.object.total_exigencias
+        exigencias = self.object.requerimento_exigencia.filter(is_deleted=False).filter(requerimento__id=self.object.id)
+        historico_mudancas_de_estado = self.object.historico_estado_requerimento.filter(is_deleted=False).filter(requerimento__id=self.object.id)
+        qtde_exigencias = self.object.total_exigencias
+        qtde_mudancas_estado = self.object.total_mudancas_estado
+        qtde_instancias_filhas = qtde_exigencias + qtde_mudancas_estado
+
 
         context["title"] = self.title
         context["cliente"] = cliente
-        context["exigencias_requerimento"] = exigencias_requerimento
+        context["exigencias"] = exigencias
+        context["historico_mudancas_de_estado"] = historico_mudancas_de_estado
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         return context
 
@@ -636,7 +646,7 @@ class RequerimentoInicialCienciaView(UpdateView):
         return super().form_valid(form)
     
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class MudancaEstadoRequerimentoInicialView(CreateView):
+class MudancaEstadoRequerimentoInicialCreateView(CreateView):
     model = HistoricoMudancaEstadoRequerimentoInicial
     template_name = "form.html"
     form_class = MudancaEstadoRequerimentoInicialForm
@@ -657,6 +667,30 @@ class MudancaEstadoRequerimentoInicialView(CreateView):
         return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
 
     def get_context_data(self, **kwargs):
-        context = super(MudancaEstadoRequerimentoInicialView, self).get_context_data(**kwargs)
+        context = super(MudancaEstadoRequerimentoInicialCreateView, self).get_context_data(**kwargs)
         context["title"] = self.title
         return context
+    
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class MudancaEstadoRequerimentoInicialDeleteView(DeleteView):
+    model = HistoricoMudancaEstadoRequerimentoInicial
+    template_name = "delete.html"
+    title = "Excluindo Mudança de Estado do Requerimento"
+    tipo_objeto = "a mudança de estado do requerimento"
+
+    def get_context_data(self, **kwargs):
+        context = super(MudancaEstadoRequerimentoInicialDeleteView, self).get_context_data(**kwargs)
+        context["title"] = self.title
+        context["form_title_identificador"] = f"de NB nº {self.object.requerimento.NB}"
+        context["tipo_objeto"] = self.tipo_objeto
+        context["qtde_instancias_filhas"] = 0
+        return context
+    
+    def get_success_url(self):
+        return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
+    
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.is_deleted:
+            raise Http404("Requerimento não encontrado")
+        return obj

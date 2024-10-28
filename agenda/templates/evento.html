@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+
+{% block content %}
+<main class="content mb-5" >
+    <div class="container-fluid mb-3">
+        <div class="p-1 mt-3">
+            <div class='row'>
+                <div class='display-5'>Evento</div>
+            </div>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Tipo</dt>
+                <dd class="col-sm-9">{{ evento.tipo|title }}</dd>
+              
+                <dt class="col-sm-3">Título</dt>
+                <dd class="col-sm-9">{{ evento.titulo }}</dd>
+              
+                <dt class="col-sm-3 text-truncate">Data de Início</dt>
+                <dd class="col-sm-9">{{ evento.data_inicio|date:"d/m/Y H:i" }}</dd>
+                
+                <dt class="col-sm-3 text-truncate">Data Fim</dt>
+                <dd class="col-sm-9">{{ evento.data_fim|date:"d/m/Y H:i" }}</dd>
+              
+                <dt class="col-sm-3">Descrição</dt>
+                <dd class="col-sm-9">{{ evento.descricao }}</dd>
+              
+                <dt class="col-sm-3">Local</dt>
+                <dd class="col-sm-9">{{ evento.local }}</dd>
+              </dl>
+            </div>
+        </div>
+
+        <div class="p-1 mt-3">
+            <a class="btn btn-secondary" onclick="window.history.back()">Voltar</a>
+        </div>
+    </div>
+</main>
+{% endblock content %}

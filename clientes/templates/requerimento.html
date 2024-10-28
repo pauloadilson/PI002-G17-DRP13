@@ -96,16 +96,16 @@
                 {% endif %}
             </p>
         </div>
-        <div class="accordion" id="accordionExample">
+        <div class="accordion" id="accordionRequerimento">
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingOne">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                     <b>Exigências</b>
                 </button>
               </h2>
-              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionRequerimento">
                 <div class="accordion-body overflow-x-auto ">
-                    <table class="table">
+                    <table class="table table-hover" id='exigencias'>
                         <thead>
                             <tr>
                                 <th>Data final do prazo</th>
@@ -116,7 +116,7 @@
                         </thead>
                         <tbody>
                         {% if requerimento.get_class_name == 'RequerimentoInicial' %}
-                            {% for exigencia in exigencias_requerimento %}
+                            {% for exigencia in exigencias %}
                             <tr>
                                 <td>{{ exigencia.data|date:"d/m/Y" }}</td>
                                 <td>{{ exigencia.natureza }}</td>
@@ -143,6 +143,53 @@
                 </div>
               </div>
             </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                  <button class="accordion-button collapsed display-5 col-sm-8" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      <strong>Histórico de Mudança de Estado do Requerimento</strong>
+                  </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionRequerimento">
+                  <div class="accordion-body overflow-x-auto ">
+                      <table class="table table-hover" id='mudancas_estado'>
+                          <thead>
+                              <tr>
+                                  <th>Data de mudança de estado</th>
+                                  <th>Estado Anterior </th>
+                                  <th>Estado Novo</th>
+                                  <th>Observação</th>
+                                  <th class='col-sm-2'>Ações</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                          {% if requerimento.get_class_name == 'RequerimentoInicial' %}
+                              {% for mudanca_estado in historico_mudancas_de_estado %}
+                              <tr>
+                                  <td>{{ mudanca_estado.data_mudanca|date:"d/m/Y" }}</td>
+                                  <td>{{ mudanca_estado.estado_anterior }}</td>
+                                  <td>{{ mudanca_estado.estado_novo }}</td>
+                                  <td>{{ mudanca_estado.observacao }}</td>
+                                  <td >
+                                      <a href="{% url 'excluir_mudanca_estado_requerimento_inicial' cliente.cpf requerimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                              </tr>
+                              {% endfor %}
+                          {% elif requerimento.get_class_name == 'RequerimentoRecurso' %}
+                              {% for exigencia in exigencias_requerimento %}
+                              <tr>
+                                  <td>{{ exigencia.data|date:"d/m/Y" }}</td>
+                                  <td>{{ exigencia.natureza }}</td>
+                                  <td>{{ exigencia.estado }}</td>
+                                  <td >
+                                      <a href="{% url 'atualizar_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                                      <a href="{% url 'excluir_exigencia_requerimento_recurso' cliente.cpf requerimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                              </tr>
+                              {% endfor %}
+                          {% endif %}
+                          </tbody>
+                      </table>
+                  </div>
+                </div>
+              </div>
         </div>
         <div class="p-1 mt-3">
             <a class="btn btn-secondary" onclick="window.history.back()">Voltar</a>
