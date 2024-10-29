@@ -18,6 +18,7 @@ from login.graph_helper import criar_evento_no_microsoft_graph
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+import pytz
 
 # Create your views here.
 # Exibe uma lista de eventos
@@ -86,12 +87,17 @@ class EventoCreateView(CreateView):
 class EventoDetailView(View):
     def get(self, request, pk):
         evento = get_object_or_404(Evento, id=pk)
+
+        # Defina o fuso horário UTC-3 'America/Sao_Paulo'
+        timezone = pytz.timezone('America/Sao_Paulo')
+        # Converta as datas e horas para o fuso horário UTC-3
+        data_inicio = evento.data_inicio.astimezone(timezone)
+
         data = {
             'titulo': evento.titulo,
             'tipo': evento.tipo.capitalize(),
             'descricao': evento.descricao,
-            'data_inicio': evento.data_inicio.strftime('%d/%m/%Y às %H:%M'),
-            'data_fim': evento.data_fim.strftime('%d/%m/%Y %H:%M'),
+            'data_inicio': data_inicio.strftime('%d/%m/%Y às %H:%M'),
             'local': evento.local,
         }
         return JsonResponse(data)
