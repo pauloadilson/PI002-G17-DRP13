@@ -19,7 +19,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 import pytz
-
+from login.auth_helper import get_token
 # Create your views here.
 # Exibe uma lista de eventos
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -34,6 +34,8 @@ class AgendaView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super(AgendaView, self).get_context_data(**kwargs)
+        token = get_token(self.request)
+        context['is_microsoft_logged_in'] = bool(token)
         context['title'] = self.title
         return context
 
@@ -64,12 +66,9 @@ class EventoCreateView(CreateView):
             # Substitua "user_email" pelo e-mail do usuário que deve receber o evento
             #user_email = settings.MICROSOFT_CLIENT_EMAIL  # Exemplo usando o e-mail do usuário logado
             criar_evento_no_microsoft_graph(self.request, self.object)  # self.object é o evento salvo
-            print('evento criado no Microsoft Graph??')
             messages.success(self.request, 'Evento criado e sincronizado com o calendário do Microsoft Outlook.')
         except Exception as e:
-            print(f'Erro ao criar evento no Microsoft Outlook: {e}')
-            messages.error(self.request, f'Erro ao criar evento no Microsoft Outlook: {e}')
-            response = self.form_invalid(form)
+            messages.error(self.request, f'Erro ao criar evento no Microsoft Calendar!')
         return response
 
     def form_invalid(self, form):

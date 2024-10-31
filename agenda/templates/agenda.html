@@ -12,6 +12,14 @@
               Novo Evento
             </a>
           </p>
+          {% if not is_microsoft_logged_in %}
+          <p class="d-inline-flex gap-1">
+            <a class="btn btn-primary" href="{% url 'signin' %}" role="button">
+              Login na Microsoft
+            </a>
+          </p>
+          {% endif %}
+
         <div class="p-1">
             <div id="calendar"></div>
         </div>
