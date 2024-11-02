@@ -1,0 +1,18 @@
+.tooltip-link {
+    position: relative;
+  }
+.tooltip-text {
+    position: absolute;
+    top: -20%;
+    left: 20%;
+    background: #222;
+    color: white;
+    font-weight: bold;
+    border-radius: 2px;
+    padding: 1px;
+    border-radius: 2px;
+    font-size: 90%;
+    width: max-content;
+    transform: trqanslateX(-50%);
+    white-space: nowrap;
+  }
