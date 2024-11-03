@@ -43,11 +43,13 @@
               <a
                 href="{% url 'atualizar_cliente' cliente.cpf %}"
                 class="btn btn-warning"
+                atitle="Editar"
                 >{% bs_icon 'pencil-square' %}</a
               >
               <a
-                href="{% url 'excluir_cliente' pk=cliente.cpf %}"
+                href="{% url 'excluir_cliente' cliente.cpf %}"
                 class="btn btn-danger"
+                atitle="Excluir"
                 >{% bs_icon 'file-x' %}</a
               >
             </td>

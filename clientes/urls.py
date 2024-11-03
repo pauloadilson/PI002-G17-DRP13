@@ -32,9 +32,9 @@ urlpatterns = [
     path("clientes/", ClientesListView.as_view(), name="clientes"),
     path("cliente/", include ([
         path('adicionar', ClienteCreateView.as_view(), name='adicionar_cliente'),
-        path('<int:pk>', ClienteDetailView.as_view(), name='cliente'),
-        path('<int:pk>/atualizar', ClienteUpdateView.as_view(), name='atualizar_cliente'),
-        path('<int:pk>/excluir', ClienteDeleteView.as_view(), name='excluir_cliente'),
+        path('<int:cpf>', ClienteDetailView.as_view(), name='cliente'),
+        path('<int:cpf>/atualizar', ClienteUpdateView.as_view(), name='atualizar_cliente'),
+        path('<int:cpf>/excluir', ClienteDeleteView.as_view(), name='excluir_cliente'),
     ])),
     path('escolher-requerimento/<str:cpf>', EscolherTipoRequerimentoView.as_view(), name='escolher_tipo_requerimento'),
     path("requerimento_inicial/<int:cpf>/", include ([

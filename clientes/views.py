@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.http import Http404
 from django.db.models.base import Model as Model
 from django.views.generic import (
@@ -34,7 +34,7 @@ from clientes.forms import (
     ExigenciaRequerimentoRecursoModelForm
 )
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from itertools import chain
 from django.utils import timezone
 # Create your views here.
@@ -44,8 +44,10 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, any]:
         context = super(IndexView, self).get_context_data(**kwargs)
+        hoje = timezone.localdate()
+        hoje_aware = timezone.make_aware(datetime.combine(hoje, datetime.min.time()))
         eventos = Evento.objects.filter(
-            data_inicio__gte=timezone.localdate(),
+            data_inicio__gte=hoje_aware,
             ).order_by('data_inicio')[:5]
         context["title"] = self.title
         context["agenda"] = eventos
@@ -95,7 +97,8 @@ class ClienteDetailView(DetailView):
     context_object_name = "cliente"
 
     def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
+        cpf = self.kwargs.get('cpf')
+        obj = get_object_or_404(Cliente, cpf=cpf)
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj

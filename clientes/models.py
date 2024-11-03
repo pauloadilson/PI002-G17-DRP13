@@ -40,7 +40,7 @@ class Servico(models.Model):
 class Requerimento(models.Model):
     id = models.AutoField(primary_key=True) # ID do requerimento
     protocolo = models.CharField(max_length=20, unique=True) # Protocolo do requerimento
-    NB = models.CharField(max_length=20) # Numero do benefi­cio do cliente
+    NB = models.CharField(max_length=20, blank=True, null=True) # Numero do benefi­cio do cliente
     requerente_titular = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='cliente_titular_requerimento') # Relacionamento com o modelo Cliente
     servico = models.ForeignKey(Servico, on_delete=models.PROTECT, related_name='servico_requerimento') # Servico solicitado Ex: Aposentadoria por idade
     requerente_dependentes = models.TextField(blank=True, null=True) #.ManyToManyField(Cliente, related_name='cliente_dependente_requerimento', blank=True, null=True) # Relacionamento com o modelo Cliente

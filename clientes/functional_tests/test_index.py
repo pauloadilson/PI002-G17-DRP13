@@ -35,7 +35,7 @@ class TestIndex(StaticLiveServerTestCase):
         
         # verificar se a saudação está correta
         element = self.driver.find_element(By.XPATH,"/html/body/div/main/div/div/div[1]")
-        self.assertEqual(element.text, "Bem Vindo(a)")
+        self.assertEqual(element.text, "Bem Vindo(a) !")
 
         # verificar se o texto da página está correto
         element = self.driver.find_element(By.XPATH,"/html/body/div/main/div/div/div[2]/h3")

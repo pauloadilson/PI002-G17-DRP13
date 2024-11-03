@@ -37,6 +37,7 @@ class ClienteModelForm(forms.ModelForm):
             Field('data_nascimento', css_class='form-control date_picker', placeholder='dd/mm/aaaa'),
             Field('telefone_whatsapp', css_class='form-control'),
             Field('telefone', css_class='form-control'),
+            Field('observacao_telefone', css_class='form-control'),
             Field('email', css_class='form-control', type='email'),
             FormActions(
                 Submit('submit', 'Salvar', css_class='btn btn-primary'),
