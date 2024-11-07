@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load bootstrap_icons %}
+
+{% block content %}
+<main class="content mb-5" >
+    <div class="container-fluid mb-3">
+        <div class="p-1 mt-3">
+            <div class='row'>
+                <div class='display-5 col-sm-8'>Atendimento</div>
+                <div class='display-5 col-sm-4'>
+                    <a href="{% url 'atualizar_atendimento' atendimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                    {% if qtde_instancias_filhas == 0 %}
+                    <a href="{% url 'excluir_atendimento' atendimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                    {% endif %}
+                </div>
+            </div>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Id</dt>
+                <dd class="col-sm-9">{{ atendimento.id }}</dd>
+              
+                <dt class="col-sm-3">Data</dt>
+                <dd class="col-sm-9">{{ atendimento.data }}</dd>
+              
+                <dt class="col-sm-3 text-truncate">Cliente</dt>
+                <dd class="col-sm-9">{{ atendimento.cliente.nome }}</dd>
+              
+                <dt class="col-sm-3">Requerimento</dt>
+                <dd class="col-sm-9">{{ atendimento.requerimento.NB }}</dd>
+              
+                <dt class="col-sm-3">Descrição</dt>
+                <dd class="col-sm-9">{{ atendimento.descricao }}</dd>
+
+                <dt class="col-sm-3">Observação</dt>
+                <dd class="col-sm-9">{{ atendimento.observacao }}</dd>
+
+              </dl>
+              <hr />
+            </div>
+        </div>
+        <div class="p-1 mt-3">
+            <a class="btn btn-secondary" onclick="window.history.back()">Voltar</a>
+        </div>
+    </div>
+</main>
+{% endblock content %}

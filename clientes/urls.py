@@ -1,6 +1,11 @@
 from django.urls import path
 from django.urls import path, include
 from clientes.views import (
+    AtendimentoCreateView,
+    AtendimentoDeleteView,
+    AtendimentoDetailView,
+    AtendimentoUpdateView,
+    AtendimentosListView,
     IndexView,
     ClientesListView,
     ClienteCreateView,
@@ -61,5 +66,12 @@ urlpatterns = [
             path("adicionar", ExigenciaRequerimentoRecursoCreateView.as_view(), name="adicionar_exigencia_requerimento_recurso"),
             path("atualizar", ExigenciaRequerimentoRecursoUpdateView.as_view(), name="atualizar_exigencia_requerimento_recurso"),
             path("excluir", ExigenciaRequerimentoRecursoDeleteView.as_view(), name="excluir_exigencia_requerimento_recurso"),
+    ])),
+    path("atendimentos", AtendimentosListView.as_view(), name="atendimentos"),
+    path("atendimento/",include([
+                path("adicionar",AtendimentoCreateView.as_view(), name="adicionar_atendimento",),
+                path("<int:pk>", AtendimentoDetailView.as_view(), name="atendimento"),
+                path("<int:pk>/atualizar", AtendimentoUpdateView.as_view(), name="atualizar_atendimento"),
+                path("<int:pk>/excluir", AtendimentoDeleteView.as_view(), name="excluir_atendimento"),
     ])),
 ]

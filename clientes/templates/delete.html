@@ -8,7 +8,7 @@
             <div class='display-5'>{{ title }}</div>
             <hr />
         </div>
-        {% if qtde_instancias_filhas == 0 %}
+        {% if qtde_instancias_filhas == 0 or is_atendimento == True %}
         <div class="mt-2" id="delete">
             <p>Tem certeza que deseja excluir {{ tipo_objeto }} <strong>{{ form_title_identificador }}</strong>?</p>
             <form method="post" enctype='multipart/form-data'>

@@ -2,36 +2,40 @@ from datetime import datetime
 from django.http import Http404
 from django.db.models.base import Model as Model
 from django.views.generic import (
-    TemplateView, 
-    ListView, 
-    CreateView, 
-    DetailView, 
-    UpdateView, 
-    DeleteView
+    TemplateView,
+    ListView,
+    CreateView,
+    DetailView,
+    UpdateView,
+    DeleteView,
 )
 from django.views.generic.edit import FormView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from agenda.models import Evento
 from clientes.models import (
+    Atendimento,
     Cliente,
     HistoricoMudancaEstadoRequerimentoInicial, 
     Requerimento,
-    RequerimentoInicial, 
-    RequerimentoRecurso, 
+    RequerimentoInicial,
+    RequerimentoRecurso,
     Exigencia,
     ExigenciaRequerimentoInicial,
     ExigenciaRequerimentoRecurso,
 )
 from clientes.forms import (
-    ClienteModelForm, 
+    AtendimentoModelForm,
+    ClienteModelForm,
     EscolhaTipoRequerimentoForm,
+    RequerimentoInicialModelForm,
+    RequerimentoRecursoModelForm,
     MudancaEstadoRequerimentoInicialForm,
     RequerimentoInicialCienciaForm, 
     RequerimentoInicialModelForm, 
     RequerimentoRecursoModelForm, 
     ExigenciaRequerimentoInicialModelForm,
-    ExigenciaRequerimentoRecursoModelForm
+    ExigenciaRequerimentoRecursoModelForm,
 )
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
@@ -53,7 +57,8 @@ class IndexView(TemplateView):
         context["agenda"] = eventos
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ClientesListView(ListView):
     model = Cliente
     template_name = "clientes.html"
@@ -74,23 +79,25 @@ class ClientesListView(ListView):
         context["title"] = self.title
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ClienteCreateView(CreateView):
     model = Cliente
-    template_name = 'form.html'
+    template_name = "form.html"
     form_class = ClienteModelForm
     title = "Novo Cliente"
 
     def get_context_data(self, **kwargs):
         context = super(ClienteCreateView, self).get_context_data(**kwargs)
         # adicionar o título da página e o título do formulário ao contexto
-        context['title'] = self.title
+        context["title"] = self.title
         return context
-    
-    def get_success_url(self):
-        return reverse_lazy("cliente",kwargs={"cpf": self.object.cpf})
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+    def get_success_url(self):
+        return reverse_lazy("cliente", kwargs={"cpf": self.object.cpf})
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ClienteDetailView(DetailView):
     model = Cliente
     template_name = "cliente.html"
@@ -102,14 +109,14 @@ class ClienteDetailView(DetailView):
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
-    
+
     def get_context_data(self, **kwargs):
         context = super(ClienteDetailView, self).get_context_data(**kwargs)
         cliente_id = self.object.cpf
         title = f"Cliente {cliente_id}"
-        requerimentos_cliente = RequerimentoInicial.objects.filter(is_deleted=False).filter(
-            requerente_titular__cpf__icontains=cliente_id
-        )
+        requerimentos_cliente = RequerimentoInicial.objects.filter(
+            is_deleted=False
+        ).filter(requerente_titular__cpf__icontains=cliente_id)
         recursos_cliente = RequerimentoRecurso.objects.filter(is_deleted=False).filter(
             requerente_titular__cpf__icontains=cliente_id
         )
@@ -121,8 +128,9 @@ class ClienteDetailView(DetailView):
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
 
         return context
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ClienteUpdateView(UpdateView):
     model = Cliente
     template_name = "form.html"
@@ -138,14 +146,15 @@ class ClienteUpdateView(UpdateView):
         context["title"] = self.title
         context["form_title_identificador"] = f"CPF nº {self.object.cpf}"
         return context
-    
+
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ClienteDeleteView(DeleteView):
     model = Cliente
     template_name = "delete.html"
@@ -155,11 +164,11 @@ class ClienteDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(ClienteDeleteView, self).get_context_data(**kwargs)
-        
+
         cliente_id = self.object.cpf
-        requerimentos_cliente = RequerimentoInicial.objects.filter(is_deleted=False).filter(
-            requerente_titular__cpf__icontains=cliente_id
-        )
+        requerimentos_cliente = RequerimentoInicial.objects.filter(
+            is_deleted=False
+        ).filter(requerente_titular__cpf__icontains=cliente_id)
         recursos_cliente = RequerimentoRecurso.objects.filter(is_deleted=False).filter(
             requerente_titular__cpf__icontains=cliente_id
         )
@@ -179,103 +188,120 @@ class ClienteDeleteView(DeleteView):
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
-    
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class EscolherTipoRequerimentoView(FormView):
-    template_name = 'form.html'
+    template_name = "form.html"
     title = "Escolher Tipo de Requerimento"
     form_class = EscolhaTipoRequerimentoForm
-    success_url = reverse_lazy('escolher_tipo_requerimento')
+    success_url = reverse_lazy("escolher_tipo_requerimento")
 
     def form_valid(self, form):
-        tipo = form.cleaned_data['tipo_requerimento']
-        cpf = cpf = self.kwargs['cpf']  # Obtendo o CPF do formulário
+        tipo = form.cleaned_data["tipo_requerimento"]
+        cpf = cpf = self.kwargs["cpf"]  # Obtendo o CPF do formulário
 
         # Incluindo o CPF na URL de redirecionamento
-        if tipo == 'inicial':
-            return redirect('adicionar_requerimento_inicial', cpf=cpf)
-        elif tipo == 'recurso':
-            return redirect('adicionar_requerimento_recurso', cpf=cpf)
-        
+        if tipo == "inicial":
+            return redirect("adicionar_requerimento_inicial", cpf=cpf)
+        elif tipo == "recurso":
+            return redirect("adicionar_requerimento_recurso", cpf=cpf)
+
         return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super(EscolherTipoRequerimentoView, self).get_context_data(**kwargs)
         # adicionar o título da página e o título do formulário ao contexto
-        context['title'] = self.title
-        
+        context["title"] = self.title
+
         return context
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoInicialCreateView(CreateView):
     model = RequerimentoInicial
     form_class = RequerimentoInicialModelForm
-    template_name = 'form.html'
+    template_name = "form.html"
     title = "Novo Requerimento"
     form_title_identificador = None
 
     def get_initial(self):
         initial = super().get_initial()
         # Filtra o cliente titular do requerimento se is_deleted=False
-        initial["requerente_titular"] = Cliente.objects.filter(is_deleted=False).get(cpf=self.kwargs["cpf"])
+        initial["requerente_titular"] = Cliente.objects.filter(is_deleted=False).get(
+            cpf=self.kwargs["cpf"]
+        )
         return initial
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # Filtra os clientes com is_deleted=False para os campos tutor_curador e instituidor
-        form.fields['tutor_curador'].queryset = Cliente.objects.filter(is_deleted=False)
-        form.fields['instituidor'].queryset = Cliente.objects.filter(is_deleted=False)
+        form.fields["tutor_curador"].queryset = Cliente.objects.filter(is_deleted=False)
+        form.fields["instituidor"].queryset = Cliente.objects.filter(is_deleted=False)
         return form
 
     def form_valid(self, form):
-        form.instance.requerente_titular = Cliente.objects.filter(is_deleted=False).get(cpf=self.kwargs["cpf"])
+        form.instance.requerente_titular = Cliente.objects.filter(is_deleted=False).get(
+            cpf=self.kwargs["cpf"]
+        )
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("requerimento_inicial",kwargs={"cpf":self.kwargs["cpf"],"pk": self.object.id})
+        return reverse_lazy(
+            "requerimento_inicial",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.object.id},
+        )
 
     def get_context_data(self, **kwargs):
         context = super(RequerimentoInicialCreateView, self).get_context_data(**kwargs)
         context["title"] = self.title
         context["form_title_identificador"] = f'CPF nº {self.kwargs["cpf"]}'
         return context
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoRecursoCreateView(CreateView):
     model = RequerimentoRecurso
     form_class = RequerimentoRecursoModelForm
-    template_name = 'form.html'
+    template_name = "form.html"
     title = "Novo Recurso"
     form_title_identificador = None
 
     def get_initial(self):
         initial = super().get_initial()
         # Filtra o cliente titular do requerimento se is_deleted=False
-        initial["requerente_titular"] = Cliente.objects.filter(is_deleted=False).get(cpf=self.kwargs["cpf"])
+        initial["requerente_titular"] = Cliente.objects.filter(is_deleted=False).get(
+            cpf=self.kwargs["cpf"]
+        )
         return initial
-    
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # Filtra os clientes com is_deleted=False para os campos tutor_curador e instituidor
-        form.fields['tutor_curador'].queryset = Cliente.objects.filter(is_deleted=False)
-        form.fields['instituidor'].queryset = Cliente.objects.filter(is_deleted=False)
+        form.fields["tutor_curador"].queryset = Cliente.objects.filter(is_deleted=False)
+        form.fields["instituidor"].queryset = Cliente.objects.filter(is_deleted=False)
         return form
 
     def form_valid(self, form):
-        form.instance.requerente_titular = Cliente.objects.filter(is_deleted=False).get(cpf=self.kwargs["cpf"])
+        form.instance.requerente_titular = Cliente.objects.filter(is_deleted=False).get(
+            cpf=self.kwargs["cpf"]
+        )
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("requerimento_recurso",kwargs={"cpf":self.kwargs["cpf"],"pk": self.object.id})
+        return reverse_lazy(
+            "requerimento_recurso",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.object.id},
+        )
 
     def get_context_data(self, **kwargs):
         context = super(RequerimentoRecursoCreateView, self).get_context_data(**kwargs)
         context["title"] = self.title
         context["form_title_identificador"] = f'CPF nº {self.kwargs["cpf"]}'
         return context
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoInicialDetailView(DetailView):
     model = RequerimentoInicial
     template_name = "requerimento.html"
@@ -295,7 +321,9 @@ class RequerimentoInicialDetailView(DetailView):
         context = super(RequerimentoInicialDetailView, self).get_context_data(**kwargs)
 
         cliente_id = self.object.requerente_titular.cpf
-        cliente = Cliente.objects.filter(is_deleted=False).filter(cpf__icontains=cliente_id)[
+        cliente = Cliente.objects.filter(is_deleted=False).filter(
+            cpf__icontains=cliente_id
+        )[
             0
         ]  # .order_by('nome') '-nome' para ordem decrescente
         exigencias = self.object.requerimento_exigencia.filter(is_deleted=False).filter(requerimento__id=self.object.id)
@@ -312,7 +340,8 @@ class RequerimentoInicialDetailView(DetailView):
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoRecursoDetailView(DetailView):
     model = RequerimentoRecurso
     template_name = "requerimento.html"
@@ -332,10 +361,14 @@ class RequerimentoRecursoDetailView(DetailView):
         context = super(RequerimentoRecursoDetailView, self).get_context_data(**kwargs)
 
         cliente_id = self.object.requerente_titular.cpf
-        cliente = Cliente.objects.filter(is_deleted=False).filter(cpf__icontains=cliente_id)[
+        cliente = Cliente.objects.filter(is_deleted=False).filter(
+            cpf__icontains=cliente_id
+        )[
             0
         ]  # .order_by('nome') '-nome' para ordem decrescente
-        exigencias_requerimento = self.object.requerimento_exigencia.filter(is_deleted=False).filter(requerimento__id=self.object.id)
+        exigencias_requerimento = self.object.requerimento_exigencia.filter(
+            is_deleted=False
+        ).filter(requerimento__id=self.object.id)
         qtde_instancias_filhas = self.object.total_exigencias
 
         context["title"] = self.title
@@ -344,7 +377,8 @@ class RequerimentoRecursoDetailView(DetailView):
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoUpdateView(UpdateView):
     model = Requerimento
     template_name = "form.html"
@@ -357,7 +391,7 @@ class RequerimentoUpdateView(UpdateView):
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
-    
+
     def form_valid(self, form):
         return super().form_valid(form)
 
@@ -373,7 +407,8 @@ class RequerimentoUpdateView(UpdateView):
         )
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoInicialUpdateView(RequerimentoUpdateView):
     model = RequerimentoInicial
     template_name = "form.html"
@@ -382,9 +417,13 @@ class RequerimentoInicialUpdateView(RequerimentoUpdateView):
     form_title_identificador = "o requerimento inicial"
 
     def get_success_url(self):
-        return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.object.id})
+        return reverse_lazy(
+            "requerimento_inicial",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.object.id},
+        )
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoRecursoUpdateView(RequerimentoUpdateView):
     model = RequerimentoRecurso
     template_name = "form.html"
@@ -393,9 +432,13 @@ class RequerimentoRecursoUpdateView(RequerimentoUpdateView):
     form_title_identificador = "o recurso"
 
     def get_success_url(self):
-        return reverse_lazy("requerimento_recurso", kwargs={"cpf":self.kwargs["cpf"],"pk": self.object.id})
+        return reverse_lazy(
+            "requerimento_recurso",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.object.id},
+        )
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoInicialDeleteView(DeleteView):
     model = RequerimentoInicial
     template_name = "delete.html"
@@ -405,7 +448,9 @@ class RequerimentoInicialDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super(RequerimentoInicialDeleteView, self).get_context_data(**kwargs)
 
-        exigencias_requerimento = ExigenciaRequerimentoInicial.objects.filter(is_deleted=False).filter(requerimento__id=self.object.id)
+        exigencias_requerimento = ExigenciaRequerimentoInicial.objects.filter(
+            is_deleted=False
+        ).filter(requerimento__id=self.object.id)
         qtde_instancias_filhas = self.object.total_exigencias
         result_list = exigencias_requerimento
         context["title"] = self.title
@@ -414,17 +459,20 @@ class RequerimentoInicialDeleteView(DeleteView):
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         context["result_list"] = result_list
         return context
-    
+
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
-    
-    def get_success_url(self):
-        return reverse_lazy("cliente", kwargs={"pk": self.object.requerente_titular.cpf})
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+    def get_success_url(self):
+        return reverse_lazy(
+            "cliente", kwargs={"pk": self.object.requerente_titular.cpf}
+        )
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class RequerimentoRecursoDeleteView(DeleteView):
     model = RequerimentoRecurso
     template_name = "delete.html"
@@ -434,7 +482,9 @@ class RequerimentoRecursoDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super(RequerimentoRecursoDeleteView, self).get_context_data(**kwargs)
 
-        exigencias_requerimento = ExigenciaRequerimentoRecurso.objects.filter(is_deleted=False).filter(requerimento__id=self.object.id)
+        exigencias_requerimento = ExigenciaRequerimentoRecurso.objects.filter(
+            is_deleted=False
+        ).filter(requerimento__id=self.object.id)
         qtde_instancias_filhas = self.object.total_exigencias
         result_list = exigencias_requerimento
 
@@ -444,7 +494,7 @@ class RequerimentoRecursoDeleteView(DeleteView):
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
         context["result_list"] = result_list
         return context
-    
+
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if obj.is_deleted:
@@ -452,9 +502,12 @@ class RequerimentoRecursoDeleteView(DeleteView):
         return obj
 
     def get_success_url(self):
-        return reverse_lazy("cliente", kwargs={"pk": self.object.requerente_titular.cpf})
+        return reverse_lazy(
+            "cliente", kwargs={"pk": self.object.requerente_titular.cpf}
+        )
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ExigenciaRequerimentoInicialCreateView(CreateView):
     model = ExigenciaRequerimentoInicial
     template_name = "form.html"
@@ -464,23 +517,35 @@ class ExigenciaRequerimentoInicialCreateView(CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial["requerimento"] = RequerimentoInicial.objects.filter(is_deleted=False).get(id=self.kwargs["pk"])
+        initial["requerimento"] = RequerimentoInicial.objects.filter(
+            is_deleted=False
+        ).get(id=self.kwargs["pk"])
         return initial
 
     def form_valid(self, form):
-        form.instance.requerimento = RequerimentoInicial.objects.get(id=self.kwargs["pk"])
+        form.instance.requerimento = RequerimentoInicial.objects.get(
+            id=self.kwargs["pk"]
+        )
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
+        return reverse_lazy(
+            "requerimento_inicial",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.kwargs["pk"]},
+        )
 
     def get_context_data(self, **kwargs):
-        context = super(ExigenciaRequerimentoInicialCreateView, self).get_context_data(**kwargs)
+        context = super(ExigenciaRequerimentoInicialCreateView, self).get_context_data(
+            **kwargs
+        )
         context["title"] = self.title
-        context["form_title_identificador"] = f'Requerimento de id nº {self.kwargs["pk"]}'
+        context["form_title_identificador"] = (
+            f'Requerimento de id nº {self.kwargs["pk"]}'
+        )
         return context
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ExigenciaRequerimentoRecursoCreateView(CreateView):
     model = ExigenciaRequerimentoRecurso
     template_name = "form.html"
@@ -490,23 +555,33 @@ class ExigenciaRequerimentoRecursoCreateView(CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial["requerimento"] = RequerimentoRecurso.objects.filter(is_deleted=False).get(id=self.kwargs["pk"])
+        initial["requerimento"] = RequerimentoRecurso.objects.filter(
+            is_deleted=False
+        ).get(id=self.kwargs["pk"])
         return initial
 
     def form_valid(self, form):
-        form.instance.requerimento = RequerimentoRecurso.objects.get(id=self.kwargs["pk"])
+        form.instance.requerimento = RequerimentoRecurso.objects.get(
+            id=self.kwargs["pk"]
+        )
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("requerimento_recurso", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
+        return reverse_lazy(
+            "requerimento_recurso",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.kwargs["pk"]},
+        )
 
     def get_context_data(self, **kwargs):
-        context = super(ExigenciaRequerimentoRecursoCreateView, self).get_context_data(**kwargs)
+        context = super(ExigenciaRequerimentoRecursoCreateView, self).get_context_data(
+            **kwargs
+        )
         context["title"] = self.title
         context["form_title_identificador"] = f'Recurso de id nº {self.kwargs["pk"]}'
         return context
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ExigenciaRequerimentoInicialUpdateView(UpdateView):
     model = ExigenciaRequerimentoInicial
     template_name = "form.html"
@@ -518,24 +593,30 @@ class ExigenciaRequerimentoInicialUpdateView(UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
+        return reverse_lazy(
+            "requerimento_inicial",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.kwargs["pk"]},
+        )
 
     def get_context_data(self, **kwargs):
-        context = super(ExigenciaRequerimentoInicialUpdateView, self).get_context_data(**kwargs)
-        
+        context = super(ExigenciaRequerimentoInicialUpdateView, self).get_context_data(
+            **kwargs
+        )
+
         context["title"] = self.title
         context["form_title_identificador"] = (
             f"NB nº {self.object.requerimento.NB} de {self.object.requerimento.requerente_titular.nome}"
         )
         return context
-    
+
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ExigenciaRequerimentoRecursoUpdateView(UpdateView):
     model = ExigenciaRequerimentoRecurso
     template_name = "form.html"
@@ -545,26 +626,32 @@ class ExigenciaRequerimentoRecursoUpdateView(UpdateView):
 
     def form_valid(self, form):
         return super().form_valid(form)
-    
+
     def get_success_url(self):
-        return reverse_lazy("requerimento_recurso", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
+        return reverse_lazy(
+            "requerimento_recurso",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.kwargs["pk"]},
+        )
 
     def get_context_data(self, **kwargs):
-        context = super(ExigenciaRequerimentoRecursoUpdateView, self).get_context_data(**kwargs)
-        
+        context = super(ExigenciaRequerimentoRecursoUpdateView, self).get_context_data(
+            **kwargs
+        )
+
         context["title"] = self.title
         context["form_title_identificador"] = (
             f"NB nº {self.object.requerimento.NB} de {self.object.requerimento.requerente_titular.nome}"
         )
         return context
-    
+
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
 
-@method_decorator(login_required(login_url='login'), name='dispatch')
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ExigenciaRequerimentoInicialDeleteView(DeleteView):
     model = ExigenciaRequerimentoInicial
     template_name = "delete.html"
@@ -572,23 +659,29 @@ class ExigenciaRequerimentoInicialDeleteView(DeleteView):
     tipo_objeto = "a exigência do requerimento"
 
     def get_context_data(self, **kwargs):
-        context = super(ExigenciaRequerimentoInicialDeleteView, self).get_context_data(**kwargs)
+        context = super(ExigenciaRequerimentoInicialDeleteView, self).get_context_data(
+            **kwargs
+        )
         context["title"] = self.title
         context["form_title_identificador"] = f"de NB nº {self.object.requerimento.NB}"
         context["tipo_objeto"] = self.tipo_objeto
         context["qtde_instancias_filhas"] = 0
         return context
-    
+
     def get_success_url(self):
-        return reverse_lazy("requerimento_inicial", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
+        return reverse_lazy(
+            "requerimento_inicial",
+            kwargs={"cpf": self.kwargs["cpf"], "pk": self.kwargs["pk"]},
+        )
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
-        return obj   
-    
-@method_decorator(login_required(login_url='login'), name='dispatch')
+        return obj
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
 class ExigenciaRequerimentoRecursoDeleteView(DeleteView):
     model = ExigenciaRequerimentoRecurso
     template_name = "delete.html"
@@ -596,13 +689,15 @@ class ExigenciaRequerimentoRecursoDeleteView(DeleteView):
     tipo_objeto = "a exigência do recurso"
 
     def get_context_data(self, **kwargs):
-        context = super(ExigenciaRequerimentoRecursoDeleteView, self).get_context_data(**kwargs)
+        context = super(ExigenciaRequerimentoRecursoDeleteView, self).get_context_data(
+            **kwargs
+        )
         context["title"] = self.title
         context["form_title_identificador"] = f"de NB nº {self.object.requerimento.NB}"
         context["tipo_objeto"] = self.tipo_objeto
         context["qtde_instancias_filhas"] = 0
         return context
-    
+
     def get_success_url(self):
         return reverse_lazy("requerimento_recurso", kwargs={"cpf":self.kwargs["cpf"],"pk": self.kwargs["pk"]})
     
@@ -697,3 +792,83 @@ class MudancaEstadoRequerimentoInicialDeleteView(DeleteView):
         if obj.is_deleted:
             raise Http404("Requerimento não encontrado")
         return obj
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
+class AtendimentosListView(ListView):
+    model = Atendimento
+    template_name = "atendimentos.html"
+    context_object_name = "atendimentos"
+    title = "Atendimentos"
+    ordering = ["data"]
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.title
+        return context
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
+class AtendimentoCreateView(CreateView):
+    model = Atendimento
+    template_name = "form.html"
+    form_class = AtendimentoModelForm
+    title = "Novo Atendimento"
+
+    def get_context_data(self, **kwargs):
+        context = super(AtendimentoCreateView, self).get_context_data(**kwargs)
+        context["title"] = self.title
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy("atendimentos")
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
+class AtendimentoDetailView(DetailView):
+    model = Atendimento
+    template_name = "atendimento.html"
+    context_object_name = "atendimento"
+    title = "Atendimento"
+
+    def get_context_data(self, **kwargs):
+        context = super(AtendimentoDetailView, self).get_context_data(**kwargs)
+        context["title"] = self.title
+        return context
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
+class AtendimentoUpdateView(UpdateView):
+    model = Atendimento
+    template_name = "form.html"
+    form_class = AtendimentoModelForm
+    title = "Editando Atendimento"
+
+    def get_context_data(self, **kwargs):
+        context = super(AtendimentoUpdateView, self).get_context_data(**kwargs)
+        context["title"] = self.title
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy("atendimentos")
+
+
+@method_decorator(login_required(login_url="login"), name="dispatch")
+class AtendimentoDeleteView(DeleteView):
+    model = Atendimento
+    template_name = "delete.html"
+    success_url = "/atendimentos/"
+    title = "Excluindo Atendimento"
+    tipo_objeto = "o atendimento"
+    is_atendimento = True
+
+    def get_context_data(self, **kwargs):
+        context = super(AtendimentoDeleteView, self).get_context_data(**kwargs)
+        context["title"] = self.title
+        context["tipo_objeto"] = self.tipo_objeto
+        context["is_atendimento"] = self.is_atendimento
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy("atendimentos")
