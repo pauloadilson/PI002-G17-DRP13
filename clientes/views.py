@@ -838,6 +838,15 @@ class AtendimentoCreateView(CreateView):
     form_class = AtendimentoModelForm
     title = "Novo Atendimento"
 
+    def get_initial(self):
+        initial = super().get_initial()
+        # Filtra o cliente titular do requerimento se is_deleted=False
+        if "cpf" in self.kwargs:
+            initial["cliente"] = Cliente.objects.filter(is_deleted=False).get(
+                cpf=self.kwargs["cpf"]
+            )
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super(AtendimentoCreateView, self).get_context_data(**kwargs)
         context["title"] = self.title
