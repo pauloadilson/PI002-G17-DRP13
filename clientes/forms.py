@@ -317,6 +317,9 @@ class AtendimentoModelForm(forms.ModelForm):
         hoje = timezone.localdate()
         self.initial['data'] = hoje.strftime("%d/%m/%Y")
 
+        if self.initial.get('cliente'):
+            self.fields['cliente'].disabled = True
+
         if self.instance and self.instance.pk:
             self.fields['cliente'].disabled = True
             self.fields['requerimento'].disabled = True
