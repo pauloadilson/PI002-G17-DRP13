@@ -57,7 +57,6 @@ class IndexView(TemplateView):
         context["agenda"] = eventos
         return context
 
-
 @method_decorator(login_required(login_url="login"), name="dispatch")
 class ClientesListView(ListView):
     model = Cliente
@@ -120,13 +119,16 @@ class ClienteDetailView(DetailView):
         recursos_cliente = RequerimentoRecurso.objects.filter(is_deleted=False).filter(
             requerente_titular__cpf__icontains=cliente_id
         )
-        qtde_instancias_filhas = self.object.total_requerimentos
+        atendimentos_cliente = Atendimento.objects.filter(is_deleted=False).filter(
+            cliente__cpf__icontains=cliente_id
+        )
+        qtde_instancias_filhas = self.object.total_requerimentos + self.object.total_atendimentos
 
         context["title"] = title
-        context["requerimentos_cliente"] = requerimentos_cliente
-        context["recursos_cliente"] = recursos_cliente
+        context["requerimentos"] = requerimentos_cliente
+        context["recursos"] = recursos_cliente
+        context["atendimentos"] = atendimentos_cliente
         context["qtde_instancias_filhas"] = qtde_instancias_filhas
-
         return context
 
 
@@ -236,8 +238,9 @@ class RequerimentoInicialCreateView(CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # Filtra os clientes com is_deleted=False para os campos tutor_curador e instituidor
-        form.fields["tutor_curador"].queryset = Cliente.objects.filter(is_deleted=False)
-        form.fields["instituidor"].queryset = Cliente.objects.filter(is_deleted=False)
+        requerente_titular = self.get_initial().get("requerente_titular")
+        form.fields["tutor_curador"].queryset = Cliente.objects.filter(is_deleted=False).exclude(cpf=requerente_titular.cpf)
+        form.fields["instituidor"].queryset = Cliente.objects.filter(is_deleted=False).exclude(cpf=requerente_titular.cpf)
         return form
 
     def form_valid(self, form):
@@ -793,6 +796,25 @@ class MudancaEstadoRequerimentoInicialDeleteView(DeleteView):
             raise Http404("Requerimento não encontrado")
         return obj
 
+@method_decorator(login_required(login_url="login"), name="dispatch")
+class PrazoView(TemplateView):
+    template_name = "prazo.html"
+    title = "Prazo"
+
+    def get_context_data(self, **kwargs) -> dict[str, any]:
+        context = super(PrazoView, self).get_context_data(**kwargs)
+        hoje = timezone.localdate()
+        hoje_aware = timezone.make_aware(datetime.combine(hoje, datetime.min.time()))
+        eventos = Evento.objects.filter(
+            data_inicio__gte=hoje_aware,
+            ).filter(
+            tipo="prazo",
+            ).order_by('data_inicio')[:5]
+        context["title"] = self.title
+        context["agenda"] = eventos
+        return context
+
+
 
 @method_decorator(login_required(login_url="login"), name="dispatch")
 class AtendimentosListView(ListView):
@@ -832,9 +854,26 @@ class AtendimentoDetailView(DetailView):
     context_object_name = "atendimento"
     title = "Atendimento"
 
+    cliente_id = None
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.is_deleted:
+            raise Http404("Requerimento não encontrado")
+        return obj
+
     def get_context_data(self, **kwargs):
         context = super(AtendimentoDetailView, self).get_context_data(**kwargs)
+        
+        cliente_id = self.object.cliente.cpf
+        cliente = Cliente.objects.filter(is_deleted=False).filter(
+            cpf__icontains=cliente_id
+        )[
+            0
+        ]  # .order_by('nome') '-nome' para ordem decrescente
+
         context["title"] = self.title
+        context["cliente"] = cliente
         return context
 
 
@@ -858,7 +897,7 @@ class AtendimentoUpdateView(UpdateView):
 class AtendimentoDeleteView(DeleteView):
     model = Atendimento
     template_name = "delete.html"
-    success_url = "/atendimentos/"
+    success_url = reverse_lazy("atendimentos")
     title = "Excluindo Atendimento"
     tipo_objeto = "o atendimento"
     is_atendimento = True

@@ -19,36 +19,33 @@
         </a>
       </p>
     </div>
-
-    <div class="p-1 overflow-x-auto">
-      <table class="table">
+    
+    <div class="p-1 overflow-x-auto" >
+      <table class="table" style="min-width: 576px">
         <thead>
           <tr>
-            <th>Id</th>
             <th>Data</th>
             <th>Cliente</th>
             <th>Requerimento</th>
+            <th class='col-sm-2'>Ações</th>
           </tr>
         </thead>
         <tbody>
           {% for atendimento in atendimentos %}
           <tr>
             <td>
-              <a href="{% url 'atendimento' atendimento.id %}">
-                {{ atendimento.id }}
-              </a>
+              <a href="{% url 'atendimento' atendimento.cliente.cpf atendimento.id %}">{{ atendimento.data|date:"d/m/Y" }}</a>
             </td>
-            <td>{{ atendimento.data }}</td>
             <td>{{ atendimento.cliente.nome }}</td>
             <td>{{ atendimento.requerimento.NB }}</td>
             <td>
               <a
-                href="{% url 'atualizar_atendimento' atendimento.id %}"
+                href="{% url 'atualizar_atendimento' atendimento.cliente.cpf atendimento.id %}"
                 class="btn btn-warning"
                 >{% bs_icon 'pencil-square' %}</a
               >
               <a
-                href="{% url 'excluir_atendimento' pk=atendimento.id %}"
+                href="{% url 'excluir_atendimento' atendimento.cliente.cpf atendimento.id %}"
                 class="btn btn-danger"
                 >{% bs_icon 'file-x' %}</a
               >

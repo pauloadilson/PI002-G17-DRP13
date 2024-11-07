@@ -15,7 +15,7 @@
           {% if user.is_authenticated == False %}
           <li class="nav-item">
             <div class='tooltip-link' id="tooltip-login-link" role="login-link">
-              <span class='tooltip-text' id="tooltip-clientes-text">Alt+0</span>
+              <span class='tooltip-text' id="tooltip-login-text">Alt+0</span>
               <a class="nav-link" id="login-link" aria-describedby="login-link" href="{% url 'login' %}">Login</a>
             </div>
           </li>
@@ -26,17 +26,20 @@
               <a class="nav-link" id="clientes-link" aria-describedby="clientes-link" href="{% url 'clientes' %}">Clientes</a>
             </div>
           </li>
-            <a class="nav-link disabled" href="">Prazos</a>
+          <div class='tooltip-link' id="tooltip-prazos-link" role="prazos-link">
+            <span class='tooltip-text' id="tooltip-prazos-text">Alt+3</span>
+            <a class="nav-link" id="prazos-link" aria-describedby="prazos-link" href="{% url 'prazos' %}">Prazos</a>
+          </div>
           </li>
           </li>
           <div class='tooltip-link' id="tooltip-atendimentos-link" role="atendimentos-link">
-            <span class='tooltip-text' id="tooltip-atendimentos-text">Alt+3</span>
+            <span class='tooltip-text' id="tooltip-atendimentos-text">Alt+4</span>
             <a  class="nav-link" id="atendimentos-link" aria-describedby="atendimentos-link" href="{% url 'atendimentos' %}">Atendimentos</a>
           </div>  
           </li>
           </li>
           <div class='tooltip-link' id="tooltip-agenda-link" role="agenda-link">
-            <span class='tooltip-text' id="tooltip-agenda-text">Alt+4</span>
+            <span class='tooltip-text' id="tooltip-agenda-text">Alt+5</span>
             <a class="nav-link" id="agenda-link" aria-describedby="agenda-link" href="{% url 'agenda' %}">Agenda</a>
           </div>
           </li>
@@ -61,43 +64,43 @@
     </div>
   </nav>
   <script>
-    var tooltip_index = $('#tooltip-index-text');
-    var tooltip_clientes = $('#tooltip-clientes-text');
-    var tooltip_atendimentos = $('#tooltip-atendimentos-text');
-    var tooltip_agenda = $('#tooltip-agenda-text');
-    var tooltip_login = $('#tooltip-login-text');
+    var tooltips = {
+      index: $('#tooltip-index-text'),
+      clientes: $('#tooltip-clientes-text'),
+      prazos: $('#tooltip-prazos-text'),
+      atendimentos: $('#tooltip-atendimentos-text'),
+      agenda: $('#tooltip-agenda-text'),
+      login: $('#tooltip-login-text')
+  };
 
-    tooltip_index.hide();
-    tooltip_clientes.hide();
-    tooltip_atendimentos.hide();
-    tooltip_agenda.hide();
-    tooltip_login.hide();
+    // Initially hide all tooltips
+    $.each(tooltips, function(key, tooltip) {
+      tooltip.hide();
+  });
 
     document.addEventListener('keydown', function(event) {
         if (event.altKey) {
-          tooltip_index.show();
-          tooltip_clientes.show();
-          tooltip_atendimentos.show();
-          tooltip_agenda.show();
-          tooltip_login.show();
+          $.each(tooltips, function(key, tooltip) {
+            tooltip.show();
+        });
         }
-        if (event.ctrlKey && event.key === '1') {
+        if (event.altKey && event.key === '1') {
             document.getElementById('index-link').click();
-        } else if (event.ctrlKey && event.key === '2') {
+        } else if (event.altKey && event.key === '2') {
             document.getElementById('clientes-link').click();
-        } else if (event.ctrlKey && event.key === '3') {
-          document.getElementById('atendimentos-link').click();
-        } else if (event.ctrlKey && event.key === '4') {
+        } else if (event.altKey && event.key === '3') {
+          document.getElementById('prazos-link').click();
+        } else if (event.altKey && event.key === '4') {
+            document.getElementById('atendimentos-link').click();
+        } else if (event.altKey && event.key === '5') {
             document.getElementById('agenda-link').click();
-        } else if (event.ctrlKey && event.key === '0') {
+        } else if (event.altKey && event.key === '0') {
             document.getElementById('login-link').click();
         } else if (event.key === 'Escape') {
-          tooltip_index.hide();
-          tooltip_clientes.hide();
-          tooltip_atendimentos.hide();
-          tooltip_agenda.hide();
-          tooltip_login.hide();
-        }
+          $.each(tooltips, function(key, tooltip) {
+            tooltip.hide();
+        })
+      }
     });
     
 </script>

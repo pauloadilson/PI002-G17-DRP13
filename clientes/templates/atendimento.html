@@ -6,12 +6,36 @@
     <div class="container-fluid mb-3">
         <div class="p-1 mt-3">
             <div class='row'>
+                <div class='display-5 col-sm-8'>Cliente</div>
+                <div class='display-5 col-sm-4'>
+                    <a href="{% url 'atualizar_cliente' cliente.cpf %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                </div>
+            </div>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">CPF</dt>
+                <dd class="col-sm-9"><a href="{% url 'cliente' cliente.cpf %}"> {{ cliente.cpf }} </a> </dd>
+            
+                <dt class="col-sm-3">Nome</dt>
+                <dd class="col-sm-9">{{ cliente.nome }}</dd>
+            
+                <dt class="col-sm-3 text-truncate">Data de Nascimento</dt>
+                <dd class="col-sm-9">{{ cliente.data_nascimento|date:"d/m/Y" }}</dd>
+            
+                <dt class="col-sm-3">WhatsApp</dt>
+                <dd class="col-sm-9">{{ cliente.telefone_whatsapp }}</dd>
+            {% if cliente.telefone %}
+                <dt class="col-sm-3">Telefone</dt>
+                <dd class="col-sm-9">{{ cliente.telefone }}</dd>
+            {% endif %}
+            </dl>  
+        </div>
+        <div class="p-1 mt-3">
+            <div class='row'>
                 <div class='display-5 col-sm-8'>Atendimento</div>
                 <div class='display-5 col-sm-4'>
                     <a href="{% url 'atualizar_atendimento' atendimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
-                    {% if qtde_instancias_filhas == 0 %}
                     <a href="{% url 'excluir_atendimento' atendimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
-                    {% endif %}
                 </div>
             </div>
             <hr />

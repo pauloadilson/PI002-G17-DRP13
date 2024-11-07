@@ -107,10 +107,12 @@ class RequerimentoInicialModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RequerimentoInicialModelForm, self).__init__(*args, **kwargs)
 
+        # Desabilitar o campo requerente_titular
+        self.fields['requerente_titular'].disabled = True
+        
         # Desabilitar o campo CPF no update
         if self.instance and self.instance.pk:
             self.fields['protocolo'].disabled = True
-            self.fields['requerente_titular'].disabled = True
             self.fields['servico'].disabled = True
             self.fields['estado'].disabled = True
         
@@ -153,10 +155,12 @@ class RequerimentoRecursoModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RequerimentoRecursoModelForm, self).__init__(*args, **kwargs)
 
+        # Desabilitar o campo requerente_titular
+        self.fields['requerente_titular'].disabled = True
+
         # Desabilitar os campos  no update
         if self.instance and self.instance.pk:
             self.fields['protocolo'].disabled = True
-            self.fields['requerente_titular'].disabled = True
             self.fields['servico'].disabled = True
             self.fields['estado'].disabled = True
 
@@ -312,6 +316,10 @@ class AtendimentoModelForm(forms.ModelForm):
 
         hoje = timezone.localdate()
         self.initial['data'] = hoje.strftime("%d/%m/%Y")
+
+        if self.instance and self.instance.pk:
+            self.fields['cliente'].disabled = True
+            self.fields['requerimento'].disabled = True
 
         self.helper = FormHelper()
         self.helper.layout = Layout(

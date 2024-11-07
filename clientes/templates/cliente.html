@@ -48,14 +48,14 @@
                 </a>
             </div>
         </div>
-        <div class="accordion" id="accordionExample">
+        <div class="accordion" id="accordionCliente">
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingOne">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                     Requerimentos iniciais
                 </button>
               </h2>
-              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionCliente">
                 <div class="accordion-body overflow-x-auto">
                     <table class="table table-hover" id='requerimentos'>
                         <thead>
@@ -73,7 +73,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for requerimento in requerimentos_cliente %}
+                            {% for requerimento in requerimentos %}
                             <tr>
                                 <td><a href="{% url 'requerimento_inicial' cliente.cpf requerimento.id %}"> {{ requerimento.protocolo }}</a></td>
                                 <td>{{ requerimento.NB }}</td>
@@ -101,7 +101,7 @@
                    <strong> Recursos </strong>
                 </button>
               </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionCliente">
                 <div class="accordion-body overflow-x-auto">
                     <table class="table table-hover" id='recursos'>
                         <thead>
@@ -119,7 +119,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for recurso in recursos_cliente %}
+                            {% for recurso in recursos %}
                             <tr>
                                 <td><a href="{% url 'requerimento_recurso' cliente.cpf recurso.id %}">{{ recurso.protocolo }}</a></td>
                                 <td>{{ recurso.NB }}</td>
@@ -141,6 +141,48 @@
                 </div>
               </div>
             </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                  <button class="accordion-button collapsed display-5 col-sm-8" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                     <strong> Atendimentos </strong>
+                  </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionCliente">
+                  <div class="accordion-body overflow-x-auto">
+                      <table class="table table-hover" id='atendimentos'>
+                          <thead>
+                              <tr>
+                                  <th class='col-sm-2'>Data</th>
+                                  <th>Requerimento</th>
+                                  <th class='col-sm-2'>Ações</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                            {% for atendimento in atendimentos %}
+                            <tr>
+                              <td>
+                                <a href="{% url 'atendimento' atendimento.cliente.cpf atendimento.id %}">{{ atendimento.data|date:"d/m/Y" }}</a>
+                              </td>
+                              <td>{{ atendimento.requerimento.NB }}</td>
+                              <td>
+                                <a
+                                  href="{% url 'atualizar_atendimento' atendimento.cliente.cpf atendimento.id %}"
+                                  class="btn btn-warning"
+                                  >{% bs_icon 'pencil-square' %}</a
+                                >
+                                <a
+                                  href="{% url 'excluir_atendimento' atendimento.cliente.cpf atendimento.id %}"
+                                  class="btn btn-danger"
+                                  >{% bs_icon 'file-x' %}</a
+                                >
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+                </div>
+              </div>
         </div>
 
         <div class="p-1 mt-3">

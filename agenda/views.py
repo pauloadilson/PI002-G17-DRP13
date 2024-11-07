@@ -52,14 +52,6 @@ class EventoCreateView(CreateView):
         # Primeiro, salva o evento localmente
         response = super().form_valid(form)
         print('entrando no metodo')
-        '''
-        # Verifica se o token de acesso está disponível
-        access_token = self.request.session.get('access_token')
-        print('access_token')
-        if not access_token:
-            messages.error(self.request, 'Você precisa fazer login para criar um evento no Microsoft Outlook.')
-            return redirect(reverse_lazy('signin'))
-        '''
         # Depois, tenta criar o evento no Microsoft Graph
         try:
             print('tentando criar evento no Microsoft Graph')
@@ -68,7 +60,7 @@ class EventoCreateView(CreateView):
             criar_evento_no_microsoft_graph(self.request, self.object)  # self.object é o evento salvo
             messages.success(self.request, 'Evento criado e sincronizado com o calendário do Microsoft Outlook.')
         except Exception as e:
-            messages.error(self.request, f'Erro ao criar evento no Microsoft Calendar!')
+            messages.error(self.request, f'Erro ao criar evento no Microsoft Calendar! Realize a inclusão manualmente no Microsoft Outlook.')
         return response
 
     def form_invalid(self, form):

@@ -29,6 +29,13 @@ class Cliente(models.Model):
             requerente_titular=self
             )
         return len(lista_requerimentos)
+    
+    @property
+    def total_atendimentos(self):
+        lista_atendimentos = Atendimento.objects.filter(is_deleted=False).filter(
+            cliente=self
+            )
+        return len(lista_atendimentos)
 
 class Servico(models.Model):
     id = models.AutoField(primary_key=True) # ID do serviço
