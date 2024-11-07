@@ -101,6 +101,8 @@ class ClienteDetailView(DetailView):
     model = Cliente
     template_name = "cliente.html"
     context_object_name = "cliente"
+    slug_field = "cpf"
+    slug_url_kwarg = "cpf"
 
     def get_object(self, queryset=None):
         cpf = self.kwargs.get('cpf')
@@ -139,6 +141,8 @@ class ClienteUpdateView(UpdateView):
     form_class = ClienteModelForm
     title = "Editando Cliente"
     form_title_identificador = None
+    slug_field = "cpf"
+    slug_url_kwarg = "cpf"
 
     def get_success_url(self):
         return reverse_lazy("cliente", kwargs={"pk": self.object.cpf})
@@ -163,6 +167,8 @@ class ClienteDeleteView(DeleteView):
     success_url = "/clientes/"
     title = "Excluindo Cliente"
     tipo_objeto = "o cliente"
+    slug_field = "cpf"
+    slug_url_kwarg = "cpf"
 
     def get_context_data(self, **kwargs):
         context = super(ClienteDeleteView, self).get_context_data(**kwargs)

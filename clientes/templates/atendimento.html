@@ -34,15 +34,12 @@
             <div class='row'>
                 <div class='display-5 col-sm-8'>Atendimento</div>
                 <div class='display-5 col-sm-4'>
-                    <a href="{% url 'atualizar_atendimento' atendimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
-                    <a href="{% url 'excluir_atendimento' atendimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
+                    <a href="{% url 'atualizar_atendimento' cliente.cpf atendimento.id %}" class="btn btn-warning">{% bs_icon 'pencil-square' %}</a>
+                    <a href="{% url 'excluir_atendimento' cliente.cpf atendimento.id %}" class="btn btn-danger">{% bs_icon 'file-x' %}</a>
                 </div>
             </div>
             <hr />
             <dl class="row">
-                <dt class="col-sm-3">Id</dt>
-                <dd class="col-sm-9">{{ atendimento.id }}</dd>
-              
                 <dt class="col-sm-3">Data</dt>
                 <dd class="col-sm-9">{{ atendimento.data }}</dd>
               
@@ -59,7 +56,6 @@
                 <dd class="col-sm-9">{{ atendimento.observacao }}</dd>
 
               </dl>
-              <hr />
             </div>
         </div>
         <div class="p-1 mt-3">
