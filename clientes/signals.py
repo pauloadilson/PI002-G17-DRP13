@@ -22,8 +22,8 @@ def registrar_mudanca_estado_requerimento_inicial(sender, instance, created, **k
         data_fim = data_inicio + timedelta(hours=1)
         evento = Evento.objects.create(
             tipo='prazo',
-            titulo=f'Prazo para o Requerimento nº {requerimento_inicial.NB}',
-            descricao=f'Requerimento nº {requerimento_inicial.NB} concluído com indeferimento. Prazo para recurso.',
+            titulo=f'Prazo para o Requerimento nº {requerimento_inicial.NB} do Cliente {requerimento_inicial.requerente_titular.nome}, CPF nº {requerimento_inicial.requerente_titular.cpf}',
+            descricao=f'Cliente {requerimento_inicial.requerente_titular.nome}, CPF nº {requerimento_inicial.requerente_titular.cpf}. Requerimento nº {requerimento_inicial.NB} concluído com indeferimento. Prazo para recurso.',
             data_inicio=data_inicio,
             data_fim=data_fim,
             local='Escritório'

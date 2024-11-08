@@ -39,6 +39,8 @@
             themeSystem: 'bootstrap5',
             locale: 'pt-br',
             height: 400,
+            listDayFormat: { weekday: 'long'}, 
+            listDaySideFormat: { day: 'numeric', month: 'long', year: 'numeric'  }, 
             events: [
                 {% for evento in agenda %}
                 {
